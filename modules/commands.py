@@ -26,7 +26,7 @@ def register_commands_handlers(bot):
         ])
         await callback_query.message.edit_media(
         InputMediaPhoto(
-          media="https://tinypic.host/images/2025/07/14/file_00000000fc2461fbbdd6bc500cecbff8_conversation_id6874702c-9760-800e-b0bf-8e0bcf8a3833message_id964012ce-7ef5-4ad4-88e0-1c41ed240c03-1-1.jpg",
+          media="https://graph.org/file/8c148221d261c06e2102b-7164eb21e504cbefe3.jpg",
           caption=caption
         ),
         reply_markup=keyboard
@@ -65,7 +65,7 @@ def register_commands_handlers(bot):
     
       await callback_query.message.edit_media(
         InputMediaPhoto(
-          media="https://tinypic.host/images/2025/07/14/file_00000000fc2461fbbdd6bc500cecbff8_conversation_id6874702c-9760-800e-b0bf-8e0bcf8a3833message_id964012ce-7ef5-4ad4-88e0-1c41ed240c03-1-1.jpg",
+          media="https://graph.org/file/3f0529e0a232d7a076a60-998260a13c34d2b7ea.jpg",
           caption=caption
         ),
         reply_markup=keyboard
@@ -92,7 +92,7 @@ def register_commands_handlers(bot):
     
       await callback_query.message.edit_media(
         InputMediaPhoto(
-          media="https://tinypic.host/images/2025/07/14/file_00000000fc2461fbbdd6bc500cecbff8_conversation_id6874702c-9760-800e-b0bf-8e0bcf8a3833message_id964012ce-7ef5-4ad4-88e0-1c41ed240c03-1-1.jpg",
+          media="https://graph.org/file/28eaaf6ec37903d4c0841-93d28f7433c8e62dc2.jpg",
           caption=caption
         ),
         reply_markup=keyboard
