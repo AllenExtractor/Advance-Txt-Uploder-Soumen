@@ -54,7 +54,7 @@ async def start(bot, m: Message):
     mention = user.mention
     if m.chat.id in AUTH_USERS:
         caption = (
-            f"𝐇𝐞𝐥𝐥𝐨 𝐃𝐞𝐚𝐫 👋!\n\n"
+            f"𝐇𝐞𝐥𝐥𝐨 𝐃𝐞𝐚𝐫 🌚!\n\n"
             f"➠ 𝐈 𝐚𝐦 𝐚 𝐓𝐞𝐱𝐭 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐫 𝐁𝐨𝐭\n\n"
             f"➠ Can Extract Videos & PDFs From Your Text File and Upload to Telegram!\n\n"
             f"➠ For Guide Use button - **✨ Commands** 📖\n\n"
