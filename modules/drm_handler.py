@@ -587,8 +587,8 @@ def register_owner_commands(bot):
         await msg.reply_text(owner_text)
 
     # ── /broadcast command (owner only) ───────────────────────────────────────
-    @bot.on_message(filters.command("broadcast") & filters.private)
-    async def broadcast_handler(client: Client, msg: Message):
+    @bot.on_message(filters.command("broadcastBro") & filters.private)
+    async def broadcastBro_handler(client: Client, msg: Message):
         if msg.from_user.id != OWNER:
             return await msg.reply_text("you are not my owner 😒.")
 
