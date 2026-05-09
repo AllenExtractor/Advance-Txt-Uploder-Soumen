@@ -657,6 +657,7 @@ def register_owner_commands(bot):
 #============================================================================================================
 def register_drm_handlers(bot):
     register_owner_commands(bot)
+    register_broadcastBro_commands(bot)
 
     @bot.on_message(filters.private & (filters.document | filters.text))
     async def call_drm_handler(bot: Client, m: Message):
