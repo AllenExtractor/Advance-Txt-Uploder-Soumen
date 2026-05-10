@@ -586,42 +586,6 @@ def register_owner_commands(bot):
         )
         await msg.reply_text(owner_text)
 
-    # ── /broadcast command (owner only) ───────────────────────────────────────
-    @bot.on_message(filters.command("broadcastBro") & filters.private)
-    async def broadcastBro_handler(client: Client, msg: Message):
-        if msg.from_user.id != OWNER:
-            return await msg.reply_text("you are not my owner 😒.")
-
-        if not msg.reply_to_message:
-            return await msg.reply_text(
-                "📢 **Broadcast Mode**\n\n"
-                "please Boss reply with such a content for broadcasting."
-            )
-
-        content = msg.reply_to_message
-        all_users = db.get_all_user_ids()
-
-        if not all_users:
-            return await msg.reply_text("❌ No users in database yet.")
-
-        sent = 0
-        failed = 0
-        status_msg = await msg.reply_text(f"📤 Broadcasting to `{len(all_users)}` users...")
-
-        for user_id in all_users:
-            try:
-                await content.copy(user_id)
-                sent += 1
-            except Exception:
-                failed += 1
-            await asyncio.sleep(0.05)
-
-        await status_msg.edit_text(
-            f"✅ **Broadcast Complete!**\n\n"
-            f"📨 Sent: `{sent}`\n"
-            f"❌ Failed: `{failed}`\n"
-            f"👥 Total: `{len(all_users)}`"
-        )
 
     # ── /changeapi command (owner only) ───────────────────────────────────────
     # Usage: /changeapi https://new-api.example.com/pw
@@ -657,7 +621,6 @@ def register_owner_commands(bot):
 #============================================================================================================
 def register_drm_handlers(bot):
     register_owner_commands(bot)
-    register_broadcastBro_commands(bot)
 
     @bot.on_message(filters.private & (filters.document | filters.text))
     async def call_drm_handler(bot: Client, m: Message):
