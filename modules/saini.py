@@ -482,6 +482,16 @@ async def download_and_decrypt_video(url, cmd, name, key):
             print(f"Failed to decrypt {video_path}.")  
             return None  
 
+def _fmt_duration(seconds: int) -> str:
+    """Convert seconds → H:MM:SS format. E.g. 6397 → 1:46:37"""
+    if not seconds or seconds <= 0:
+        return "0:00:00"
+    h = seconds // 3600
+    m_val = (seconds % 3600) // 60
+    s = seconds % 60
+    return f"{h}:{m_val:02d}:{s:02d}"
+
+
 async def send_vid(bot: Client, m: Message, cc, filename, vidwatermark, thumb, name, prog, channel_id):
     import uuid
 
@@ -528,6 +538,9 @@ async def send_vid(bot: Client, m: Message, cc, filename, vidwatermark, thumb, n
         thumbnail = safe_thumb if os.path.exists(safe_thumb) else None
 
     dur = int(duration(filename))
+    duration_str = _fmt_duration(dur)
+    if duration_str:
+        cc = f"**🕐 Video Duration: {duration_str}\n\n" + cc
     start_time = time.time()
 
     # ── Upload as VIDEO ────────────────────────────────────────────────────
