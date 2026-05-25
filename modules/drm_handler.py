@@ -162,7 +162,7 @@ async def drm_handler(bot: Client, m: Message):
             other_count += 1
                 
     if not links:
-        await m.reply_text("<b>🔹Invalid Input.</b>")
+        await m.reply_text("<b>🔹I LOVE YOU💕😘.</b>")
         return
 
     if m.document:
@@ -180,7 +180,7 @@ async def drm_handler(bot: Client, m: Message):
             await m.reply_text("🔹**Processing Canclled......  **")
             return
 
-        await editable.edit(f"**(2). Enter Batch Name or send   /Bro\n\nYour Are On Step: 2/7💥**")
+        await editable.edit(f"**(2). Enter Batch Name or send  /Bro\n\nYour Are On Step: 2/7💥**")
         try:
             input1: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text0 = input1.text
@@ -231,7 +231,7 @@ async def drm_handler(bot: Client, m: Message):
         else:
             pwtoken = raw_tok
 
-        await editable.edit("**(5). Enter Your Credit Name or send     /Sobi to Use Your Set Credit Name(in the Settings).\nSupports: `Text|URL` for hyperlink 😎.\n\nYour Are On Step: 5/7💥**")
+        await editable.edit("**(5). Enter Your Credit Name or send /Sobi to Use Your Set Credit Name(in the Settings).\nSupports: `Text|URL` for hyperlink 😎.\n\nYour Are On Step: 5/7💥**")
         try:
             input3: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text3 = input3.text
@@ -282,7 +282,7 @@ async def drm_handler(bot: Client, m: Message):
         else:
             thumb = globals.thumb
 
-        await editable.edit("__**(7). ⚠️Provide the Channel ID or send.    /Baby__\n\n<blockquote><i>🔹 Make me an admin to upload.\n\nExample: Channel ID = -100XXXXXXXXXXX\n\nYour Are On Step: 7/7💥**")
+        await editable.edit("__**(7). ⚠️Provide the Channel ID or send.  /Baby__\n\n<blockquote><i>🔹 Make me an admin to upload.\n\nExample: Channel ID = -100XXXXXXXXXXX\n\nYour Are On Step: 7/7💥**")
         try:
             input7: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text7 = input7.text
@@ -304,7 +304,7 @@ async def drm_handler(bot: Client, m: Message):
             CR = globals.CR
             path = os.path.join("downloads", "Free Batch")
             editable = await m.reply_text("**(1). PDF/Image Link Captured ✅\n\nSettings se Credit Name automatic lagega 🌚.\n\nYour Are On Step: 1/2💥**")
-            await editable.edit("**(2). Enter Batch Name or send       /unknown if you don't know Name😅.\n\nAnd baaki Chize jo Settings\nMe Set hai Wo automatic Lag jaayegi.\n\nJaise ki Credit Name 🌚.\n\nYour Are On Step: 2/2💥**")
+            await editable.edit("**(2). Enter Batch Name or send   /unknown if you don't know Name😅.\n\nAnd baaki Chize jo Settings\nMe Set hai Wo automatic Lag jaayegi.\n\nJaise ki Credit Name 🌚.\n\nYour Are On Step: 2/2💥**")
             try:
                 input_bn: Message = await bot.listen(editable.chat.id, filters=filters.text & filters.user(m.from_user.id))
                 raw_text0 = input_bn.text
@@ -738,7 +738,7 @@ async def drm_handler(bot: Client, m: Message):
     if m.document:
         await bot.send_message(channel_id, f"<blockquote>🔗 Total URLs: {len(links)} \n┠🔴 Total Failed URLs: {failed_count}\n┠🟢 Total Successful URLs: {success_count}\n┃   ┠🎥 Total Video URLs: {video_count}\n┃   ┠📄 Total PDF URLs: {pdf_count}\n┃   ┠📸 Total IMAGE URLs: {img_count}</blockquote>\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**\n")
         await bot.send_message(channel_id, f"⋅ ─ list index ({raw_text}-{len(links)}) out of range ─ ⋅\n<blockquote><b>📚Batch : {b_name}</b></blockquote>\n⋅ ─ ✅DOWNLOADING ✩ COMPLETED ─ ⋅")
-        if "/d" not in raw_text7:
+        if "/Baby" not in raw_text7:
             await bot.send_message(m.chat.id, f"<blockquote><b>✅ Your Task is completed, please check your Set Channel📱</b></blockquote>")
 
 #============================================================================================================
