@@ -56,11 +56,11 @@ bot = Client(
 
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
 keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("✨ All Commands", callback_data="cmd_command")],
-            [InlineKeyboardButton("💎 All Features", callback_data="feat_command"), InlineKeyboardButton("⚙️ Settings", callback_data="setttings")],
-            [InlineKeyboardButton("💳 Premium Plans", callback_data="upgrade_command")],
-            [InlineKeyboardButton(text="🔍Developer", url="https://t.me/CinderellaContactBot"), InlineKeyboardButton(text="👑 Owner", url="https://t.me/MR_Toxic_1")],
-            [InlineKeyboardButton(text="💥Cinderella Rename", url="https://t.me/Cinderella_renameBot"), InlineKeyboardButton(text="💥Cinderella String", url="https://t.me/Cinderella_StringBot")],
+            [InlineKeyboardButton("💕Commands", callback_data="cmd_command")],
+            [InlineKeyboardButton("🧌All Features", callback_data="feat_command"), InlineKeyboardButton("⚙️ Settings", callback_data="setttings")],
+            [InlineKeyboardButton("💰Premium Plans", callback_data="upgrade_command")],
+            [InlineKeyboardButton(text="🥸Developer", url="https://t.me/CinderellaContactBot"), InlineKeyboardButton(text="👑 Owner", url="https://t.me/MR_Toxic_1")],
+            [InlineKeyboardButton(text="💥Cinderella Recaption", url="https://t.me/Cinderella_captionBot"), InlineKeyboardButton(text="💥Cinderella String", url="https://t.me/Cinderella_StringBot")],
         ])      
 
 @bot.on_message(filters.command("start"))
