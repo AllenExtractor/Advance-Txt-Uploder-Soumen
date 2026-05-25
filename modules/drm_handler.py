@@ -243,7 +243,7 @@ async def drm_handler(bot: Client, m: Message):
         else:
             CR = parse_credit(raw_text3)
 
-        await editable.edit("**(6).💙 𝐍𝐨𝐰 𝐬𝐞𝐧𝐝 𝐭𝐡𝐞 𝐓𝐡𝐮𝐦𝐛 𝐔𝐑𝐋\n𝐄𝐠: 𝐌𝐮𝐬𝐭 𝐛𝐞 𝐄𝐧𝐝 𝐖𝐢𝐭𝐡 *.𝐣𝐩𝐠*"**\n\n𝐎𝐫 𝐒𝐞𝐧𝐝 `no`\n\n𝐘𝐨𝐮 𝐀𝐫𝐞 𝐎𝐧 𝐒𝐭𝐞𝐩: 𝟔/𝟕🔵")
+        await editable.edit("**(6).💙 𝐍𝐨𝐰 𝐬𝐞𝐧𝐝 𝐭𝐡𝐞 𝐓𝐡𝐮𝐦𝐛 𝐔𝐑𝐋\n𝐄𝐠: 𝐌𝐮𝐬𝐭 𝐛𝐞 𝐄𝐧𝐝 𝐖𝐢𝐭𝐡.𝐣𝐩𝐠\n\n𝐎𝐫 𝐒𝐞𝐧𝐝 `no`\n\n𝐘𝐨𝐮 𝐀𝐫𝐞 𝐎𝐧 𝐒𝐭𝐞𝐩: 𝟔/𝟕🔵**")
         try:
             input6: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text6 = input6.text
