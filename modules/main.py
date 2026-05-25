@@ -36,15 +36,15 @@ import user_store
 
 # ── Random image list ────────────────────────────────────────────────────────
 image_list = [
-    "https://graph.org/file/417cc7326cab9036c0152-f6a281db2a6975dfa9.jpg",
-    "https://graph.org/file/033121ad32291bcaddd01-d91ae4a1f7ca9378fc.jpg",
-    "https://graph.org/file/45f48779e0aa39709d1e8-4c024567d60f6ec5c2.jpg",
-    "https://graph.org/file/6ccdd92af77784c9d367e-a4ba6f10456656bbbd.jpg",
-    "https://graph.org/file/b23084c3e9124e14e18ec-d385f8f9c8b1635a2e.jpg",
-    "https://graph.org/file/29c4511ee7a4653d22fe1-67906a2a8392895644.jpg",
-    "https://graph.org/file/b45300f1cd068ad8f1895-fa23a3a1ad25789597.jpg",
+    "https://graph.org/file/41f315a54e91963176271-084a885105ba946f5e.jpg",
+    "https://graph.org/file/e45d8d37be0c22a9cbbfa-3f2796849a1b13643a.jpg",
+    "https://graph.org/file/2d3ba7771a207e4ab33aa-272463dad4b5338502.jpg",
+    "https://graph.org/file/97d3d6a3c21bc9bdfa000-748da0a998885a9aaa.jpg",
+    "https://graph.org/file/b90ad7792c1d6b1b0d0ad-22be3904ec15293242.jpg",
+    "https://graph.org/file/b2d5f4c1abab45da76a80-699357bf49c4bbb721.jpg",
+    "https://graph.org/file/7fcefd140feafb524a0f6-0172a531df2ac35c9c.jpg",
 ]
-# ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────────────────
 
 # Initialize the bot
 bot = Client(
