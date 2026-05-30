@@ -82,13 +82,25 @@ async def progress_bar(current, total, reply, start): #NIKHIL SAINI BOTS
             sp = str(hrb(speed)) + "/s" #NIKHIL SAINI BOTS
             tot = hrb(total) #NIKHIL SAINI BOTS
             cur = hrb(current) #NIKHIL SAINI BOTS
-            bar_length = 11 #NIKHIL SAINI BOTS
+            bar_length = 10 #NIKHIL SAINI BOTS
             completed_length = int(current * bar_length / total) #NIKHIL SAINI BOTS
             remaining_length = bar_length - completed_length #NIKHIL SAINI BOTS
 
-            progress_bar = "◆" * completed_length + "◇" * remaining_length #NIKHIL SAINI BOTS
+            symbol_pairs = [ #NIKHIL SAINI BOTS
+                #("🟢", "⚪"), #NIKHIL SAINI BOTS
+                #("⚫", "⚪"), #NIKHIL SAINI BOTS
+                #("🔵", "⚪"), #NIKHIL SAINI BOTS
+                #("🔴", "⚪"), #NIKHIL SAINI BOTS
+                #("🔘", "⚪"), #NIKHIL SAINI BOTS
+                ("🟩", "⬜") #NIKHIL SAINI BOTS
+            ] #NIKHIL SAINI BOTS
+            chosen_pair = random.choice(symbol_pairs) #NIKHIL SAINI BOTS
+            completed_symbol, remaining_symbol = chosen_pair #NIKHIL SAINI BOTS
+
+            progress_bar = completed_symbol * completed_length + remaining_symbol * remaining_length #NIKHIL SAINI BOTS
 
             try: #NIKHIL SAINI BOTS
-                await reply.edit(f'**╭──⌈📤 𝐔𝐩𝐥𝐨𝐚𝐝𝐢𝐧𝐠 📤⌋──╮ \n┣⪼ [ {progress_bar} ]\n┣⪼ 🚀 𝐒𝐩𝐞𝐞𝐝 : {sp} \n┣⪼ 📈 𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐬 : {perc} \n┣⪼ ⏳ 𝐋𝐨𝐚𝐝𝐞𝐝 : {cur}\n┣⪼ 🍁 𝐒𝐢𝐳𝐞 :  {tot} \n┣⪼ 🕛 𝐄𝐓𝐀 : {eta} \n╰────⌈ **✪ {CREDIT} ✪** ⌋────╯**\n') 
+                #await reply.edit(f'`╭──⌯═════𝐔𝐩𝐥𝐨𝐚𝐝𝐢𝐧𝐠══════⌯──╮\n├⚡ {progress_bar}\n├⚙️ Progress ➤ | {perc} |\n├🚀 Speed ➤ | {sp} |\n├📟 Processed ➤ | {cur} |\n├🧲 Size ➤ | {tot} |\n├🕑 ETA ➤ | {eta} |\n╰─═══✨🦋𝙎𝘼𝙄𝙉𝙄 𝘽𝙊𝙏𝙎🦋✨═══─╯`') 
+                await reply.edit(f'<blockquote>`╭──⌯═════𝐁𝐨𝐭 𝐒𝐭𝐚𝐭𝐢𝐜𝐬══════⌯──╮\n├⚡ {progress_bar}\n├⚙️ Progress ➤ | {perc} |\n├🚀 Speed ➤ | {sp} |\n├📟 Processed ➤ | {cur} |\n├🧲 Size ➤ | {tot} |\n├🕑 ETA ➤ | {eta} |\n╰─═══✨🦋{CREDIT}🦋✨═══─╯`</blockquote>') 
             except FloodWait as e: #NIKHIL SAINI BOTS
                 time.sleep(e.x) #NIKHIL SAINI BOTS 

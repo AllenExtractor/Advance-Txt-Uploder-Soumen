@@ -416,13 +416,14 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
     reply = await bot.send_message(channel_id, f"Downloading pdf:\n<pre><code>{name}</code></pre>")
     time.sleep(1)
 
+    safe_name = re.sub(r'[\\/*?:"<>|]', "_", name)
     final_pdf = ka
     watermarked = False
     local_thumb = None
 
     # Apply PDF watermark if set
     if pdfwatermark and pdfwatermark != "/d":
-        wm_output = f"{os.path.splitext(ka)[0]}_wm.pdf"  # Keep original name, add _wm suffix only for temp processing
+        wm_output = f"@MR_Toxic_1_{safe_name}_wm.pdf"
         try:
             success = await asyncio.wait_for(
                 apply_pdf_watermark(ka, wm_output, pdfwatermark),
@@ -434,6 +435,15 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
         if success and os.path.exists(wm_output):
             final_pdf = wm_output
             watermarked = True
+    else:
+        # No watermark — rename with @MR_Toxic_1 prefix
+        named_pdf = f"@MR_Toxic_1_{safe_name}.pdf"
+        try:
+            os.rename(ka, named_pdf)
+            final_pdf = named_pdf
+            ka = named_pdf
+        except Exception as rename_err:
+            print(f"PDF rename error: {rename_err}")
 
     # ── PDF Thumbnail — 5 retries, 45s total, graph.org .jpg + Telegram file_id support ──
     thumbnail = None

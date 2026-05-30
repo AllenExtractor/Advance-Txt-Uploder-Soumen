@@ -183,7 +183,10 @@ async def cancel_handler(client: Client, m: Message):
     else:
         if globals.processing_request:
             globals.cancel_requested = True
-            await m.reply_text("**🚦 Stop request received. Process will stop after current item finishes...**")
+            await m.delete()
+            cancel_message = await m.reply_text("**🚦 Process cancel request received. Stopping after current process...**")
+            await asyncio.sleep(30)  # 30 second wait
+            await cancel_message.delete()
         else:
             await m.reply_text("**⚡ No active process to cancel.**")
 

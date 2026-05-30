@@ -697,13 +697,6 @@ async def drm_handler(bot: Client, m: Message):
                     res_file = await helper.download_and_decrypt_video(url, cmd, namef, appxkey)  
                     filename = res_file  
                     await prog1.delete(True)
-                    if globals.cancel_requested:
-                        if filename and os.path.exists(str(filename)):
-                            os.remove(str(filename))
-                        await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
-                        globals.processing_request = False
-                        globals.cancel_requested = False
-                        return
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
                     count += 1  
                     await asyncio.sleep(1)  
@@ -715,13 +708,6 @@ async def drm_handler(bot: Client, m: Message):
                     res_file = await helper.decrypt_and_merge_video(mpd, keys_string, path, namef, raw_text2)
                     filename = res_file
                     await prog1.delete(True)
-                    if globals.cancel_requested:
-                        if filename and os.path.exists(str(filename)):
-                            os.remove(str(filename))
-                        await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
-                        globals.processing_request = False
-                        globals.cancel_requested = False
-                        return
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
                     count += 1
                     await asyncio.sleep(1)
@@ -733,13 +719,6 @@ async def drm_handler(bot: Client, m: Message):
                     res_file = await helper.download_video(url, cmd, namef)
                     filename = res_file
                     await prog1.delete(True)
-                    if globals.cancel_requested:
-                        if filename and os.path.exists(str(filename)):
-                            os.remove(str(filename))
-                        await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
-                        globals.processing_request = False
-                        globals.cancel_requested = False
-                        return
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
                     count += 1
                     time.sleep(1)
@@ -753,9 +732,6 @@ async def drm_handler(bot: Client, m: Message):
     except Exception as e:
         await m.reply_text(e)
         time.sleep(2)
-    finally:
-        globals.processing_request = False
-        globals.cancel_requested = False
 
     success_count = len(links) - int(raw_text) - failed_count + 1
     video_count = len(links) - pdf_count - img_count
