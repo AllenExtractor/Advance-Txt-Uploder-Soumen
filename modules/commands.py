@@ -35,7 +35,7 @@ def register_commands_handlers(bot):
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
     @bot.on_callback_query(filters.regex("user_command"))
     async def help_button(client, callback_query):
-        await callback_query.answer()
+      await callback_query.answer()
       user_id = callback_query.from_user.id
       first_name = callback_query.from_user.first_name
       keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Commands", callback_data="cmd_command")]])
@@ -81,7 +81,7 @@ def register_commands_handlers(bot):
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
     @bot.on_callback_query(filters.regex("owner_command"))
     async def help_button(client, callback_query):
-        await callback_query.answer()
+      await callback_query.answer()
       user_id = callback_query.from_user.id
       first_name = callback_query.from_user.first_name
       keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Commands", callback_data="cmd_command")]])

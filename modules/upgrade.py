@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedi
 def register_upgrade_handlers(bot):
     @bot.on_callback_query(filters.regex("upgrade_command"))
     async def upgrade_button(client, callback_query):
-        await callback_query.answer()
+      await callback_query.answer()
       user_id = callback_query.from_user.id
       first_name = callback_query.from_user.first_name
       keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Main Menu", callback_data="back_to_main_menu")]])
