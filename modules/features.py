@@ -53,17 +53,25 @@ def register_feature_handlers(bot):
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
 
     @bot.on_callback_query(filters.regex("watermark_command"))
-    async def watermark_button(client, callback_query):
-        await callback_query.answer()
-      keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Feature", callback_data="feat_command")]])
-      caption = f"**Custom Watermark :**\n\nSet Your Own Custom Watermark on Videos for Added Personalization."
-      await callback_query.message.edit_media(
+async def watermark_button(client, callback_query):
+    await callback_query.answer()
+
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("↩️ Back to Feature", callback_data="feat_command")]]
+    )
+
+    caption = (
+        f"**Custom Watermark :**\n\n"
+        f"Set Your Own Custom Watermark on Videos for Added Personalization."
+    )
+
+    await callback_query.message.edit_media(
         InputMediaPhoto(
-          media="https://graph.org/file/45f48779e0aa39709d1e8-4c024567d60f6ec5c2.jpg",
-          caption=caption
-          ),
-          reply_markup=keyboard
-      )
+            media="https://graph.org/file/45f48779e0aa39709d1e8-4c024567d60f6ec5c2.jpg",
+            caption=caption
+        ),
+        reply_markup=keyboard
+    )
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
     @bot.on_callback_query(filters.regex("reset_command"))
     async def restart_button(client, callback_query):
