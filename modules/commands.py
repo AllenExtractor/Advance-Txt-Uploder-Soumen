@@ -46,6 +46,7 @@ def register_commands_handlers(bot):
             f"➥ /y2t – YouTube to txt file Converter\n"  
             f"➥ /ytm – YouTube to mp3 audio downloader\n"  
             f"➥ /t2t – Message to txt file \n"
+            f"➥ /love – 💕TXT File Downloader (Premium)\n"
             f"➥ /t2h – txt file to html Converter\n"
             f"➥ /pdfrename - 📄Rename a PDF File\n"
             f"➥ /renamevideo - 🎥Rename a Video\n"
