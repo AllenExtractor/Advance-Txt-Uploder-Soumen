@@ -90,8 +90,8 @@ def parse_title_url(line: str):
     url_start = -1
     url_protocol = ""
     for proto in ["https://", "http://"]:
-        idx = line.rfind(proto)
-        if idx != -1 and (url_start == -1 or idx > url_start):
+        idx = line.find(proto)
+        if idx != -1 and (url_start == -1 or idx < url_start):
             url_start = idx
             url_protocol = proto
 
