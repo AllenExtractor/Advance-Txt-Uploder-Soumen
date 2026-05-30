@@ -890,11 +890,14 @@ def register_drm_handlers(bot):
         # Step 2: Check /download eligibility first
         if not _download_eligible.get(m.chat.id):
             await m.reply_text(
-                "**⚠️ 𝐘𝐨𝐮 𝐧𝐞𝐞𝐝 𝐭𝐨 𝐬𝐞𝐧𝐝 /𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝 𝐟𝐢𝐫𝐬𝐭!**\n\n"
-                "📋 **𝐅𝐮𝐥𝐥 𝐅𝐥𝐨𝐰:**\n"
-                "𝟏. 𝐒𝐞𝐧𝐝 /𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝\n"
-                "𝟐. 𝐒𝐞𝐧𝐝 /𝐋𝐨𝐯𝐞\n"
-                "𝟑. 𝐒𝐞𝐧𝐝 𝐲𝐨𝐮𝐫 .𝐭𝐱𝐭 𝐟𝐢𝐥𝐞"
+                "**⚠️ 𝐅𝐢𝐫𝐬𝐭 𝐆𝐨𝐭 𝐄𝐥𝐢𝐠𝐢𝐛𝐢𝐥𝐢𝐭𝐲. 𝐢𝐟 𝐲𝐨𝐮 𝐝𝐨𝐧'𝐭 𝐤𝐧𝐨𝐰 𝐡𝐨𝐰? 𝐭𝐨 𝐜𝐨𝐧𝐭𝐚𝐜𝐭 𝐭𝐨 𝐎𝐰𝐧𝐞𝐫.!**\n\n"
+                "**📋 Full Flow:**\n"
+                "𝟏. 𝐆𝐨𝐭 𝐄𝐥𝐢𝐠𝐢𝐛𝐢𝐥𝐢𝐭𝐲 𝐅𝐢𝐫𝐬𝐭\n"
+                "𝟐. 𝐍𝐨𝐰 𝐒𝐞𝐧𝐝 /𝐋𝐨𝐯𝐞 𝐂𝐨𝐦𝐦𝐚𝐧𝐝.\n"
+                "𝟑. 𝐍𝐨𝐰 𝐬𝐞𝐧𝐝 𝐦𝐞 𝐎𝐧𝐥𝐲 𝐭𝐱𝐭 𝐟𝐢𝐥𝐞.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton(text="👑 𝐎𝐖𝐍𝐄𝐑", url="https://t.me/SmartBoy_ApnaMS")]
+                ])
             )
             return
 
@@ -906,7 +909,7 @@ def register_drm_handlers(bot):
 
         await m.reply_text(
             "**🔹𝐇𝐢 𝐈 𝐚𝐦 𝐏𝐨𝐰𝐞𝐫𝐟𝐮𝐥 𝐋𝐨𝐯𝐞𝐥𝐲 𝐓𝐗𝐓 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐫📥 𝐁𝐨𝐭.**\n"
-            "**🔹𝐒𝐞𝐧𝐝 𝐦𝐞 𝐭𝐡𝐞 𝐓𝐗𝐓 𝐟𝐢𝐥𝐞 𝐚𝐧𝐝 𝐉𝐮𝐬𝐭 𝐰𝐚𝐢𝐭 𝐚𝐧𝐝 𝐖𝐚𝐭𝐜𝐡💀.**"
+            "**🔹𝐒𝐞𝐧𝐝 𝐦𝐞 𝐭𝐡𝐞 𝐓𝐗𝐓 𝐟𝐢𝐥𝐞 𝐚𝐧𝐝 𝐉𝐮𝐬𝐭 𝐰𝐚𝐢𝐭 𝐚𝐧𝐝 𝐖𝐚𝐭𝐜𝐡🙈.**"
         )
 
     # ── /Love txt file handler ────────────────────────────────────────────────
@@ -922,8 +925,8 @@ def register_drm_handlers(bot):
         _love_eligible.pop(m.chat.id, None)
 
         editable = await m.reply_text(
-            "**🔹𝐋𝐨𝐯𝐞𝐥𝐲 𝐓𝐗𝐓 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐫 𝐀𝐜𝐭𝐢𝐯𝐚𝐭𝐞𝐝💕**\n"
-            "**🔹𝐒𝐞𝐧𝐝 𝐦𝐞 𝐭𝐡𝐞 𝐓𝐗𝐓 𝐟𝐢𝐥𝐞 𝐚𝐧𝐝 𝐉𝐮𝐬𝐭 𝐰𝐚𝐢𝐭 𝐚𝐧𝐝 𝐖𝐚𝐭𝐜𝐡💀.**"
+            "**🔹𝐌𝐞𝐫𝐞 𝐁𝐚𝐛𝐮 𝐧𝐞 𝐭𝐡𝐚𝐧𝐚 𝐭𝐡𝐚𝐲𝐚💕**\n"
+            "**🔹𝐊𝐡𝐚𝐲𝐚𝐥 𝐫𝐚𝐤𝐡𝐨 𝐚𝐩𝐧𝐚 𝐁𝐚𝐜𝐡𝐜𝐡𝐚🥺.**"
         )
 
         x = await m.download()
@@ -950,7 +953,7 @@ def register_drm_handlers(bot):
             return
 
         if not links:
-            await editable.edit("<b>🔹𝐍𝐨 𝐯𝐚𝐥𝐢𝐝 𝐥𝐢𝐧𝐤𝐬 𝐟𝐨𝐮𝐧𝐝 𝐢𝐧 𝐭𝐡𝐞 𝐓𝐗𝐓 𝐟𝐢𝐥𝐞💕😘.</b>")
+            await editable.edit("<b>🔹𝐈 𝐋𝐎𝐕𝐄 𝐘𝐎𝐔💕😘.</b>")
             return
 
         await editable.edit(f"**🔹𝐓𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐤𝐬 𝐟𝐨𝐮𝐧𝐝 𝐚𝐫𝐞 {len(links)}\n\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🙄 𝐢𝐧𝐢𝐭𝐢𝐚𝐥 𝐢𝐬 𝟏**")
