@@ -92,7 +92,7 @@ def parse_title_url(line: str):
     url_start = -1
     url_protocol = ""
     for proto in ["https://", "http://"]:
-        idx = line.find(proto)
+        idx = line.rfind(proto)
         if idx != -1 and idx < url_start:
             url_start = idx
             url_protocol = proto
