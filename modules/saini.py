@@ -528,6 +528,16 @@ def _fmt_duration(seconds: int) -> str:
 async def send_vid(bot: Client, m: Message, cc, filename, vidwatermark, thumb, name, prog, channel_id):
     import uuid
 
+    # ── File existence check — fail fast with clear reason ─────────────────
+    if not filename or not os.path.isfile(str(filename)):
+        await prog.delete(True)
+        raise FileNotFoundError(
+            f"Download failed: file not found after yt-dlp. "
+            f"This URL may be unsupported, private, age-restricted, "
+            f"or requires special cookies/token. (expected: {filename})"
+        )
+    # ──────────────────────────────────────────────────────────────────────
+
     await prog.delete(True)
     reply1 = await bot.send_message(channel_id, f"**📩 Uploading Video 📩:-**\n<blockquote>**{name}**</blockquote>")
     reply = await m.reply_text(f"**Generate Thumbnail:**\n<blockquote>**{name}**</blockquote>")
@@ -606,6 +616,8 @@ async def send_vid(bot: Client, m: Message, cc, filename, vidwatermark, thumb, n
                 )
             except Exception as e3:
                 print(f"send_document fallback failed: {e3}")
+                # ── Re-raise so drm_handler can notify user via send_failed_notice ──
+                raise RuntimeError(f"All upload attempts failed: {e3}") from e3
 
     # ── Cleanup ────────────────────────────────────────────────────────────
     if os.path.exists(filename):

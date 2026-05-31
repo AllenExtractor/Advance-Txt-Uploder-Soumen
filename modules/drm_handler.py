@@ -128,8 +128,8 @@ async def send_failed_notice(bot, channel_id, vid_id, title, url, reason):
     """
     msg = (
         "\u274c **Sorry i can't able to download this:**\n\n"
-        + "**\U0001f522 🖲️𝐕𝐈𝐃_𝐈𝐃:** `" + str(vid_id).zfill(3) + "`\n\n"
-        + "**\U0001f4dd 📝 𝐓𝐢𝐭𝐥𝐞:** " + str(title) + "\n\n"
+        + "**\U0001f522 Video_ID:** `" + str(vid_id).zfill(3) + "`\n\n"
+        + "**\U0001f4dd Title:** " + str(title) + "\n\n"
         + "**\U0001f517 URL:** " + str(url) + "\n\n"
         + "**\u26a0\ufe0f Reason:** `" + str(reason) + "`\n\n"
         + "__If you think it's should be downloaded so contact to Owner.__"
