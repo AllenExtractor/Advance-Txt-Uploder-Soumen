@@ -127,12 +127,12 @@ async def send_failed_notice(bot, channel_id, vid_id, title, url, reason):
     Used for both exception failures and unsupported URL types.
     """
     msg = (
-        "\u274c **Sorry i can't able to download this:**\n\n"
-        + "**\U0001f522 Video_ID:** `" + str(vid_id).zfill(3) + "`\n\n"
-        + "**\U0001f4dd Title:** " + str(title) + "\n\n"
-        + "**\U0001f517 URL:** " + str(url) + "\n\n"
-        + "**\u26a0\ufe0f Reason:** `" + str(reason) + "`\n\n"
-        + "__If you think it's should be downloaded so contact to Owner.__"
+        "**🥺𝐒𝐨𝐫𝐫𝐲 𝐢 𝐜𝐚𝐧'𝐭 𝐚𝐛𝐥𝐞 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝 𝐭𝐡𝐢𝐬:**\n\n"
+        + "** 🖲️𝐕𝐈𝐃_𝐈𝐃:** `" + str(vid_id).zfill(3) + "`\n\n"
+        + "**📝 𝐓𝐢𝐭𝐥𝐞:** " + str(title) + "\n\n"
+        + "**𝐔𝐑𝐋:** " + str(url) + "\n\n"
+        + "**𝐑𝐞𝐚𝐬𝐨𝐧:** `" + str(reason) + "`\n\n"
+        + "__𝐈𝐟 𝐲𝐨𝐮 𝐭𝐡𝐢𝐧𝐤 𝐢𝐭'𝐬 𝐒𝐡𝐨𝐮𝐥𝐝 𝐛𝐞 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐝 𝐬𝐨 𝐜𝐨𝐧𝐭𝐚𝐜𝐭 𝐭𝐨 𝐎𝐰𝐧𝐞𝐫.__"
     )
     try:
         await bot.send_message(
@@ -140,7 +140,7 @@ async def send_failed_notice(bot, channel_id, vid_id, title, url, reason):
             msg,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(text="\U0001f451 \U0001d402\U0001d416\U0001d40d\U0001d404\U0001d411", url="https://t.me/SmartBoy_ApnaMS")]
+                [InlineKeyboardButton(text="👑𝐎𝐖𝐍𝐄𝐑", url="https://t.me/SmartBoy_ApnaMS")]
             ])
         )
     except Exception as e:
