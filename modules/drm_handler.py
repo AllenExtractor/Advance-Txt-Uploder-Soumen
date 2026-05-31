@@ -60,7 +60,8 @@ def clean_title(title: str) -> str:
     if not title:
         return title
     # Remove trailing separators (multiple rounds for nested ones)
-    separators = ' :–—|-.,!•➤►▶▸▹▪▫◆◇○●◐◑♦♢♠♣♥♡★☆✦✧✪✯✰✨⭐🌟'
+    # Covers comma, all bracket types, colon, pipe, exclamation and more
+    separators = ' :–—|-.,!,;()[]{}|!•➤►▶▸▹▪▫◆◇○●◐◑♦♢♠♣♥♡★☆✦✧✪✯✰✨⭐🌟'
     for _ in range(5):
         new_title = title.rstrip(separators).rstrip()
         if new_title == title:
@@ -87,11 +88,12 @@ def parse_title_url(line: str):
         return None, None
 
     # Find the LAST occurrence of http:// or https:// — that's the real URL start
+    # (title may contain colons, so we want the rightmost protocol match)
     url_start = -1
     url_protocol = ""
     for proto in ["https://", "http://"]:
-        idx = line.find(proto)
-        if idx != -1 and (url_start == -1 or idx < url_start):
+        idx = line.rfind(proto)
+        if idx != -1 and idx > url_start:
             url_start = idx
             url_protocol = proto
 
@@ -118,6 +120,32 @@ def parse_title_url(line: str):
     return title_part, url_body
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ── Failed/Skipped download notice ──────────────────────────────────────
+async def send_failed_notice(bot, channel_id, vid_id, title, url, reason):
+    """
+    Send a formatted message when any video/link cannot be downloaded.
+    Used for both exception failures and unsupported URL types.
+    """
+    msg = (
+        "\u274c **Sorry i can't able to download this:**\n\n"
+        + "**\U0001f522 Video_ID:** `" + str(vid_id).zfill(3) + "`\n\n"
+        + "**\U0001f4dd Title:** " + str(title) + "\n\n"
+        + "**\U0001f517 URL:** " + str(url) + "\n\n"
+        + "**\u26a0\ufe0f Reason:** `" + str(reason) + "`\n\n"
+        + "__If you think it's should be downloaded so contact to Owner.__"
+    )
+    try:
+        await bot.send_message(
+            channel_id,
+            msg,
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(text="\U0001f451 \U0001d402\U0001d416\U0001d40d\U0001d404\U0001d411", url="https://t.me/SmartBoy_ApnaMS")]
+            ])
+        )
+    except Exception as e:
+        print(f"send_failed_notice error: {e}")
+# ───────────────────────────────────────────────────────────────────────────
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
 
 async def drm_handler(bot: Client, m: Message):
@@ -519,7 +547,7 @@ async def drm_handler(bot: Client, m: Message):
                         url = None
                         keys_string = None
                 except Exception as e:
-                    await bot.send_message(channel_id, f'⚠️**𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐅𝐚𝐢𝐥𝐞𝐝**⚠️\n**𝐍𝐚𝐦𝐞** =>> `{str(count).zfill(3)} {name1}`\n**𝐔𝐑𝐋** =>> {url}\n\n<blockquote expandable><i><b>𝐅𝐚𝐢𝐥𝐞𝐝 𝐑𝐞𝐚𝐬𝐨𝐧 𝐭𝐨 𝐬𝐢𝐠𝐧 𝐮𝐫𝐥: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
+                    await send_failed_notice(bot, channel_id, count, name1, url, f'Failed to sign URL: {str(e)}')
                     count += 1
                     failed_count += 1
                     continue
@@ -550,7 +578,7 @@ async def drm_handler(bot: Client, m: Message):
                     pass
                 else:
                     if pwtoken == "pwtoken" or not pwtoken:
-                        await bot.send_message(channel_id, f'⚠️ **𝐏𝐖 𝐓𝐨𝐤𝐞𝐧 𝐧𝐨𝐭 𝐬𝐞𝐭!**\n**𝐍𝐚𝐦𝐞** =>> `{name1}`\n\n<blockquote>𝐏𝐥𝐞𝐚𝐬𝐞 𝐬𝐞𝐭 𝐲𝐨𝐮𝐫 𝐏𝐡𝐲𝐬𝐢𝐜𝐬 𝐖𝐚𝐥𝐥𝐚𝐡 𝐭𝐨𝐤𝐞𝐧 𝐟𝐢𝐫𝐬𝐭 𝐯𝐢𝐚:\n**𝐒𝐞𝐭𝐭𝐢𝐧𝐠𝐬 → 𝐒𝐞𝐭 𝐓𝐨𝐤𝐞𝐧 → 𝐏𝐡𝐲𝐬𝐢𝐜𝐬 𝐖𝐚𝐥𝐥𝐚𝐡**</blockquote>', disable_web_page_preview=True)
+                        await send_failed_notice(bot, channel_id, count, name1, link0, 'PW Token not set! Please set Physics Wallah token in Settings → Set Token → Physics Wallah')
                         count += 1
                         failed_count += 1
                         continue
@@ -703,10 +731,10 @@ async def drm_handler(bot: Client, m: Message):
                             if os.path.exists(f'{namef}.pdf'):
                                 await helper.send_doc(bot, m, None, f'{namef}.pdf', cc1, None, count, name, channel_id, pdfwatermark, pdfthumb)
                             else:
-                                await bot.send_message(channel_id, f"⚠️ PDF download failed: `{name}`")
+                                await send_failed_notice(bot, channel_id, count, name1, link0, "PDF download failed: yt-dlp could not download")
                             count += 1
                         except subprocess.TimeoutExpired:
-                            await bot.send_message(channel_id, f"⏰ PDF download timed out: `{name}`")
+                            await send_failed_notice(bot, channel_id, count, name1, link0, "PDF download timed out (300s exceeded)")
                             count += 1
                             failed_count += 1
                             continue
@@ -797,7 +825,7 @@ async def drm_handler(bot: Client, m: Message):
                     time.sleep(1)
                 
             except Exception as e:
-                await bot.send_message(channel_id, f'⚠️**𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐅𝐚𝐢𝐥𝐞𝐝**⚠️\n**𝐍𝐚𝐦𝐞** =>> `{str(count).zfill(3)} {name1}`\n**𝐔𝐑𝐋** =>> {url}\n\n<blockquote expandable><i><b>𝐅𝐚𝐢𝐥𝐞𝐝 𝐑𝐞𝐚𝐬𝐨𝐧: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
+                await send_failed_notice(bot, channel_id, count, name1, link0, str(e))
                 count += 1
                 failed_count += 1
                 continue
@@ -1189,7 +1217,7 @@ def register_drm_handlers(bot):
                     else:
                         raise Exception(f"{data.get('error', 'Your Classplus token may be expired.')}")
                 except Exception as e:
-                    await bot.send_message(channel_id, f'⚠️**𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐅𝐚𝐢𝐥𝐞𝐝**⚠️\n**𝐍𝐚𝐦𝐞** =>> `{str(count).zfill(3)} {name1}`\n**𝐔𝐑𝐋** =>> {url}\n\n<blockquote expandable><i><b>𝐅𝐚𝐢𝐥𝐞𝐝 𝐑𝐞𝐚𝐬𝐨𝐧: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
+                    await send_failed_notice(bot, channel_id, count, name1, url, f'Failed to sign URL: {str(e)}')
                     count += 1
                     failed_count += 1
                     continue
@@ -1215,7 +1243,7 @@ def register_drm_handlers(bot):
 
             elif "childId" in url and "parentId" in url:
                 if pwtoken == "pwtoken" or not pwtoken:
-                    await bot.send_message(channel_id, f'⚠️ **𝐏𝐖 𝐓𝐨𝐤𝐞𝐧 𝐧𝐨𝐭 𝐬𝐞𝐭!**\n**𝐍𝐚𝐦𝐞** =>> `{name1}`\n\n<blockquote>𝐏𝐥𝐞𝐚𝐬𝐞 𝐬𝐞𝐭 𝐲𝐨𝐮𝐫 𝐏𝐡𝐲𝐬𝐢𝐜𝐬 𝐖𝐚𝐥𝐥𝐚𝐡 𝐭𝐨𝐤𝐞𝐧 𝐟𝐢𝐫𝐬𝐭 𝐯𝐢𝐚:\n**𝐒𝐞𝐭𝐭𝐢𝐧𝐠𝐬 → 𝐒𝐞𝐭 𝐓𝐨𝐤𝐞𝐧 → 𝐏𝐡𝐲𝐬𝐢𝐜𝐬 𝐖𝐚𝐥𝐥𝐚𝐡**</blockquote>', disable_web_page_preview=True)
+                    await send_failed_notice(bot, channel_id, count, name1, link0, 'PW Token not set! Please set Physics Wallah token in Settings → Set Token → Physics Wallah')
                     count += 1
                     failed_count += 1
                     continue
@@ -1317,10 +1345,10 @@ def register_drm_handlers(bot):
                             if os.path.exists(f'{namef}.pdf'):
                                 await helper.send_doc(bot, m, None, f'{namef}.pdf', cc1, None, count, name, channel_id, globals.pdfwatermark, globals.pdfthumb)
                             else:
-                                await bot.send_message(channel_id, f"⚠️ PDF download failed: `{name}`")
+                                await send_failed_notice(bot, channel_id, count, name1, link0, "PDF download failed: yt-dlp could not download")
                             count += 1
                         except subprocess.TimeoutExpired:
-                            await bot.send_message(channel_id, f"⏰ PDF download timed out: `{name}`")
+                            await send_failed_notice(bot, channel_id, count, name1, link0, "PDF download timed out (300s exceeded)")
                             count += 1
                             failed_count += 1
                             continue
@@ -1411,7 +1439,7 @@ def register_drm_handlers(bot):
                     time.sleep(1)
 
             except Exception as e:
-                await bot.send_message(channel_id, f'⚠️**𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐅𝐚𝐢𝐥𝐞𝐝**⚠️\n**𝐍𝐚𝐦𝐞** =>> `{str(count).zfill(3)} {name1}`\n**𝐔𝐑𝐋** =>> {url}\n\n<blockquote expandable><i><b>𝐅𝐚𝐢𝐥𝐞𝐝 𝐑𝐞𝐚𝐬𝐨𝐧: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
+                await send_failed_notice(bot, channel_id, count, name1, link0, str(e))
                 count += 1
                 failed_count += 1
                 continue
