@@ -573,16 +573,12 @@ async def drm_handler(bot: Client, m: Message):
 
             #elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url:
             elif "childId" in url and "parentId" in url:
-                if m.text:
-                    # Direct link — URL already contains token info, download as-is
-                    pass
-                else:
-                    if pwtoken == "pwtoken" or not pwtoken:
-                        await send_failed_notice(bot, channel_id, count, name1, link0, 'PW Token not set! Please set Physics Wallah token in Settings → Set Token → Physics Wallah')
-                        count += 1
-                        failed_count += 1
-                        continue
-                    url = f"{PWAPI2}?url={url}&token={pwtoken}"
+                if pwtoken == "pwtoken" or not pwtoken:
+                    await send_failed_notice(bot, channel_id, count, name1, link0, 'PW Token not set! Please set Physics Wallah token in Settings → Set Token → Physics Wallah')
+                    count += 1
+                    failed_count += 1
+                    continue
+                url = f"{PWAPI2}?url={url}&token={pwtoken}"
             
             elif 'encrypted.m' in url:
                 appxkey = url.split('*')[1]
