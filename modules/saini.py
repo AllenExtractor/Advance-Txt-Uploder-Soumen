@@ -582,6 +582,7 @@ async def download_pdf_thumbnail(pdfthumb_url: str, bot=None) -> str | None:
 
 async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, channel_id, pdfwatermark="/d", pdfthumb="/d"):
     import uuid
+    import globals as _globals_mod
     reply = await bot.send_message(channel_id, f"Downloading pdf:\n<pre><code>{name}</code></pre>")
     time.sleep(1)
 
@@ -590,8 +591,66 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
     watermarked = False
     local_thumb = None
 
-    # Apply PDF watermark if set
-    if pdfwatermark and pdfwatermark != "/d":
+    # ── Build multi-location watermark configs from globals ───────────────────
+    _wm_configs = []
+
+    # Upper Right: 30% opacity, 45° rotation
+    ur = getattr(_globals_mod, "pdf_wm_upper_right", {"title": "/d", "url": "/d"})
+    if ur.get("title", "/d") != "/d":
+        _wm_configs.append({"title": ur["title"], "url": ur.get("url", "/d"),
+                             "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
+                             "rotation": 45.0, "anchor": "center"})
+    # Upper Left: 30% opacity, 0° rotation
+    ul = getattr(_globals_mod, "pdf_wm_upper_left", {"title": "/d", "url": "/d"})
+    if ul.get("title", "/d") != "/d":
+        _wm_configs.append({"title": ul["title"], "url": ul.get("url", "/d"),
+                             "x_frac": 0.15, "y_frac": 0.85, "opacity": 0.30,
+                             "rotation": 0.0, "anchor": "left"})
+    # Down Right: 90% opacity, 0° rotation
+    dr = getattr(_globals_mod, "pdf_wm_down_right", {"title": "/d", "url": "/d"})
+    if dr.get("title", "/d") != "/d":
+        _wm_configs.append({"title": dr["title"], "url": dr.get("url", "/d"),
+                             "x_frac": 0.80, "y_frac": 0.06, "opacity": 0.90,
+                             "rotation": 0.0, "anchor": "right"})
+    # Down Left: 30% opacity, 0° rotation
+    dl = getattr(_globals_mod, "pdf_wm_down_left", {"title": "/d", "url": "/d"})
+    if dl.get("title", "/d") != "/d":
+        _wm_configs.append({"title": dl["title"], "url": dl.get("url", "/d"),
+                             "x_frac": 0.15, "y_frac": 0.06, "opacity": 0.30,
+                             "rotation": 0.0, "anchor": "left"})
+    # Down Middle: 95% opacity, 0° rotation
+    dm = getattr(_globals_mod, "pdf_wm_down_middle", {"title": "/d", "url": "/d"})
+    if dm.get("title", "/d") != "/d":
+        _wm_configs.append({"title": dm["title"], "url": dm.get("url", "/d"),
+                             "x_frac": 0.50, "y_frac": 0.04, "opacity": 0.95,
+                             "rotation": 0.0, "anchor": "center"})
+
+    print(f"[PDF WM] Active watermark configs: {len(_wm_configs)}")
+
+    # ── Apply watermarks (multi-location if any configs set, else simple rename) ──
+    if _wm_configs:
+        # Apply all locations in one pass
+        _mwm_output = f"@MR_Toxic_1_{safe_name}_mwm.pdf"
+        try:
+            _mwm_success = await asyncio.wait_for(
+                apply_pdf_watermark_multi(ka, _mwm_output, _wm_configs),
+                timeout=180
+            )
+            if _mwm_success and os.path.exists(_mwm_output):
+                final_pdf = _mwm_output
+                watermarked = True
+                print(f"[PDF WM] Multi-watermark applied successfully: {_mwm_output}")
+            else:
+                print(f"[PDF WM] Multi-watermark failed, using original")
+                final_pdf = ka
+        except asyncio.TimeoutError:
+            print("[PDF WM] Multi-watermark timed out, using original")
+            final_pdf = ka
+        except Exception as _mwm_err:
+            print(f"[PDF WM] Multi-watermark error: {_mwm_err}")
+            final_pdf = ka
+    elif pdfwatermark and pdfwatermark != "/d":
+        # Legacy single watermark fallback (old pdfwatermark global)
         wm_output = f"@MR_Toxic_1_{safe_name}_wm.pdf"
         try:
             success = await asyncio.wait_for(
@@ -600,12 +659,12 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
             )
         except asyncio.TimeoutError:
             success = False
-            print("PDF watermark timed out")
+            print("[PDF WM] Single watermark timed out")
         if success and os.path.exists(wm_output):
             final_pdf = wm_output
             watermarked = True
     else:
-        # No watermark — rename with @MR_Toxic_1 prefix
+        # No watermark — rename with prefix
         named_pdf = f"@MR_Toxic_1_{safe_name}.pdf"
         try:
             os.rename(ka, named_pdf)
@@ -613,62 +672,6 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
             ka = named_pdf
         except Exception as rename_err:
             print(f"PDF rename error: {rename_err}")
-
-    # ── Apply multi-location PDF watermarks (5 positions) ────────────────────
-    try:
-        import globals as _g
-        _wm_configs = []
-        # Upper Right: 30% opacity, 45° rotation
-        ur = getattr(_g, "pdf_wm_upper_right", {"title": "/d", "url": "/d"})
-        if ur.get("title", "/d") != "/d":
-            _wm_configs.append({"title": ur["title"], "url": ur.get("url", "/d"),
-                                 "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
-                                 "rotation": 45.0, "anchor": "center"})
-        # Upper Left: 30% opacity, 0° rotation
-        ul = getattr(_g, "pdf_wm_upper_left", {"title": "/d", "url": "/d"})
-        if ul.get("title", "/d") != "/d":
-            _wm_configs.append({"title": ul["title"], "url": ul.get("url", "/d"),
-                                 "x_frac": 0.15, "y_frac": 0.85, "opacity": 0.30,
-                                 "rotation": 0.0, "anchor": "left"})
-        # Down Right: 90% opacity, 0° rotation
-        dr = getattr(_g, "pdf_wm_down_right", {"title": "/d", "url": "/d"})
-        if dr.get("title", "/d") != "/d":
-            _wm_configs.append({"title": dr["title"], "url": dr.get("url", "/d"),
-                                 "x_frac": 0.80, "y_frac": 0.06, "opacity": 0.90,
-                                 "rotation": 0.0, "anchor": "right"})
-        # Down Left: 30% opacity, 0° rotation
-        dl = getattr(_g, "pdf_wm_down_left", {"title": "/d", "url": "/d"})
-        if dl.get("title", "/d") != "/d":
-            _wm_configs.append({"title": dl["title"], "url": dl.get("url", "/d"),
-                                 "x_frac": 0.15, "y_frac": 0.06, "opacity": 0.30,
-                                 "rotation": 0.0, "anchor": "left"})
-        # Down Middle: 95% opacity, 0° rotation
-        dm = getattr(_g, "pdf_wm_down_middle", {"title": "/d", "url": "/d"})
-        if dm.get("title", "/d") != "/d":
-            _wm_configs.append({"title": dm["title"], "url": dm.get("url", "/d"),
-                                 "x_frac": 0.50, "y_frac": 0.04, "opacity": 0.95,
-                                 "rotation": 0.0, "anchor": "center"})
-
-        if _wm_configs:
-            _mwm_input = final_pdf  # apply on top of whatever we have so far
-            _mwm_output = f"@MR_Toxic_1_{safe_name}_mwm.pdf"
-            _mwm_success = await asyncio.wait_for(
-                apply_pdf_watermark_multi(_mwm_input, _mwm_output, _wm_configs),
-                timeout=180
-            )
-            if _mwm_success and os.path.exists(_mwm_output):
-                # Remove previous watermarked file if different
-                if final_pdf != ka and os.path.exists(final_pdf):
-                    try:
-                        os.remove(final_pdf)
-                    except Exception:
-                        pass
-                final_pdf = _mwm_output
-                watermarked = True
-    except asyncio.TimeoutError:
-        print("PDF multi-watermark timed out")
-    except Exception as _mwm_err:
-        print(f"PDF multi-watermark apply error: {_mwm_err}")
     # ─────────────────────────────────────────────────────────────────────────
 
     # ── PDF Thumbnail — 5 retries, 45s total, graph.org .jpg + Telegram file_id support ──
