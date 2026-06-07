@@ -71,13 +71,38 @@ async def start(bot, m: Message):
     user_store.register_user(m.chat.id)
     user = await bot.get_me()
     mention = user.mention
+
+    # ── Funny intro: random sticker + random message, auto-delete after 3s ───
+    _funny_stickers = [
+        "CAACAgQAAxkBAAFLwupqJX_GZsMsZ4vKxBwfGAOG1Euz7wACARcAArCTAAFQdAouNB1rJc47BA",
+        "CAACAgQAAxkBAAFLwwABaiWAv8N8krwglxUaqaZAqVHFBIQAAv4ZAAJxARlQagc8NAy31zc7BA",
+        "CAACAgQAAxkBAAFLwwRqJYDvJ-13xb2Un4RXhLGwSIaSzwACthMAAk6TsVJWVlvl5KoXAjsE",
+        "CAACAgQAAxkBAAFLwwhqJYEmGcRB22SDL1DzL9blbqPAyQACfxMAAmERCVDdA1gaEWW1kTsE",
+    ]
+    _funny_messages = [
+        "🙈 Oho... aakhir mil hi gayi apne baby se fursat?\nChalo koi baat nahi, ab thoda time mujhe bhi de do. 😏",
+        "👀 Welcome yaar...\nItni der laga di, kya /start button dhundhne Japan gaye the? 😂",
+        "🙈Oho... yaad aa hi gayi meri?\nMain to samjha tha tum physics ki tarah mujhe bhi bhul hi gaye. 😏",
+        "😏 Oye! Finally aa hi gaye... Main to soch raha thi tum mujhe ignore kar rahe ho🥺.",
+    ]
+    _idx = random.randint(0, 3)
+    _sticker_msg = await bot.send_sticker(chat_id=m.chat.id, sticker=_funny_stickers[_idx])
+    _text_msg = await bot.send_message(chat_id=m.chat.id, text=_funny_messages[_idx])
+    await asyncio.sleep(3)
+    try:
+        await _sticker_msg.delete()
+        await _text_msg.delete()
+    except Exception:
+        pass
+    # ─────────────────────────────────────────────────────────────────────────
+
     if m.chat.id in AUTH_USERS:
         caption = (
-            f"💕 𝐇𝐞𝐥𝐥𝐨 𝐁𝐚𝐛𝐲!\n\n"
+            f"🌚 𝐇𝐞𝐥𝐥𝐨 𝐁𝐚𝐛𝐲!\n\n"
             f"⬩➤𝐈𝐦 𝐚 𝐀𝐝𝐚𝐯𝐚𝐧𝐜𝐞𝐝 𝐔𝐩𝐥𝐨𝐚𝐝𝐞𝐫 𝐁𝐨𝐭\n\n"
             f"⬩➤𝐈 𝐂𝐚𝐧 𝐄𝐱𝐭𝐫𝐚𝐜𝐭 𝐕𝐢𝐝𝐞𝐨𝐬 & 𝐏𝐃𝐅𝐬 𝐅𝐫𝐨𝐦 𝐘𝐨𝐮𝐫 𝐓𝐞𝐱𝐭 𝐅𝐢𝐥𝐞 𝐚𝐧𝐝 𝐒𝐞𝐧𝐭 𝐭𝐨 𝐲𝐨𝐮!\n\n"
             f"⬩➤𝐅𝐨𝐫 𝐆𝐮𝐢𝐝𝐞 𝐔𝐬𝐞 𝐛𝐮𝐭𝐭𝐨𝐧 - **✨ Commands** 📖\n\n"
-            f"⬩➤𝐌𝐚𝐝𝐞 𝐁𝐲 : [{CREDIT}](tg://openmessage?user_id={OWNER}) 🗿."
+            f"⬩➤𝐌𝐚𝐝𝐞 𝐁𝐲 : {CREDIT} 🗿."
         )
     else:
         caption = (
@@ -86,7 +111,7 @@ async def start(bot, m: Message):
             f"⬩➤ 𝐈 𝐂𝐚𝐧 𝐄𝐱𝐭𝐫𝐚𝐜𝐭 𝐕𝐢𝐝𝐞𝐨𝐬 & 𝐏𝐃𝐅𝐬 𝐅𝐫𝐨𝐦 𝐘𝐨𝐮𝐫 𝐓𝐞𝐱𝐭 𝐅𝐢𝐥𝐞 𝐚𝐧𝐝 𝐒𝐞𝐧𝐭 𝐭𝐨 𝐲𝐨𝐮!\n\n"
             f"⬩➤🆓𝐘𝐨𝐮 𝐚𝐫𝐞 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐮𝐬𝐢𝐧𝐠 𝐭𝐡𝐞 𝕗𝕣𝕖𝕖 𝐯𝐞𝐫𝐬𝐢𝐨𝐧!\n"
             f"⬩➤𝐖𝐚𝐧𝐭 𝐭𝐨 𝐠𝐞𝐭 𝐏𝐫𝐞𝐦𝐢𝐮𝐦 𝐬𝐨 𝐥𝐞𝐭'𝐬 𝐬𝐭𝐚𝐫𝐭𝐞𝐝? 𝐏𝐫𝐞𝐬𝐬 /id**\n\n"
-            f"⬩➤📞 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: [{CREDIT}](tg://openmessage?user_id={OWNER}) 𝐭𝐨 𝐆𝐞𝐭 𝐭𝐡𝐞 𝐏𝐫𝐞𝐦𝐢𝐮𝐦 𝐒𝐮𝐛𝐬𝐜𝐫𝐢𝐩𝐭𝐢𝐨𝐧💎!\n"
+            f"⬩➤📞 𝐂𝐨𝐧𝐭𝐚𝐜𝐭:{CREDIT} 𝐭𝐨 𝐆𝐞𝐭 𝐭𝐡𝐞 𝐏𝐫𝐞𝐦𝐢𝐮𝐦 𝐒𝐮𝐛𝐬𝐜𝐫𝐢𝐩𝐭𝐢𝐨𝐧💎!\n"
         )
     await bot.send_photo(
         chat_id=m.chat.id,

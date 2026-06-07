@@ -308,28 +308,108 @@ def register_settings_handlers(bot):
             reply_markup=keyboard
         )
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
-    @bot.on_callback_query(filters.regex("pdf_wateermark_command"))
+    @bot.on_callback_query(filters.regex("^pdf_wateermark_command$"))
     async def pdf_watermark_button(client, callback_query):
-        user_id = callback_query.from_user.id
-        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Settings", callback_data="wattermark_command")]])
-        editable = await callback_query.message.edit(
-            f"**Send PDF Watermark text or Send /d to disable**\n"
-            f"<blockquote><b>Note:</b> Only text supported (e.g. Sharukh Khan, Munna). "
-            f"It will appear at top-right on every PDF page with 30% opacity at 45° angle.</blockquote>",
-            reply_markup=keyboard
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("↗️ Upper Right", callback_data="pdfwm_upper_right"),
+             InlineKeyboardButton("↖️ Upper Left",  callback_data="pdfwm_upper_left")],
+            [InlineKeyboardButton("↘️ Down Right",  callback_data="pdfwm_down_right"),
+             InlineKeyboardButton("↙️ Down Left",   callback_data="pdfwm_down_left")],
+            [InlineKeyboardButton("⬇️ Down Middle", callback_data="pdfwm_down_middle")],
+            [InlineKeyboardButton("🔙 Back to Settings", callback_data="wattermark_command")]
+        ])
+
+        def _wm_status(wm_dict):
+            t = wm_dict.get("title", "/d")
+            u = wm_dict.get("url", "/d")
+            if t == "/d":
+                return "❌ Off"
+            if u == "/d":
+                return f"✅ `{t[:18]}`"
+            return f"✅ `{t[:15]}` 🔗"
+
+        caption = (
+            "**📑 PDF Watermark Locations**\n\n"
+            f"↗️ **Upper Right**: {_wm_status(globals.pdf_wm_upper_right)}\n"
+            f"↖️ **Upper Left**: {_wm_status(globals.pdf_wm_upper_left)}\n"
+            f"↘️ **Down Right**: {_wm_status(globals.pdf_wm_down_right)}\n"
+            f"↙️ **Down Left**: {_wm_status(globals.pdf_wm_down_left)}\n"
+            f"⬇️ **Down Middle**: {_wm_status(globals.pdf_wm_down_middle)}\n\n"
+            "<blockquote>Tap a location to set/disable its watermark.\n"
+            "All enabled locations appear on every PDF page simultaneously.</blockquote>"
         )
-        input_msg = await bot.listen(editable.chat.id)
-        try:
-            if input_msg.text.lower() == "/d":
-                globals.pdfwatermark = "/d"
-                await editable.edit(f"**PDF Watermark Disabled ✅** !", reply_markup=keyboard)
-            else:
-                globals.pdfwatermark = input_msg.text
-                await editable.edit(f"PDF Watermark `{globals.pdfwatermark}` enabled ✅!", reply_markup=keyboard)
-        except Exception as e:
-            await editable.edit(f"<b>❌ Failed to set PDF Watermark:</b>\n<blockquote expandable>{str(e)}</blockquote>", reply_markup=keyboard)
-        finally:
-            await input_msg.delete(True)
+        await callback_query.message.edit(caption, reply_markup=keyboard)
+
+# .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
+    # ── Helper: generic PDF watermark location setter ─────────────────────────
+    def _make_pdfwm_handler(location_key: str, location_label: str, bot_ref):
+        """Factory: returns a callback handler for a specific PDF watermark location."""
+        @bot_ref.on_callback_query(filters.regex(f"^{location_key}$"))
+        async def _handler(client, callback_query):
+            back_kb = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to PDF WM", callback_data="pdf_wateermark_command")]])
+
+            # Ask for Title
+            editable = await callback_query.message.edit(
+                f"**📑 {location_label} — Set Watermark**\n\n"
+                f"**Step 1/2: Send Title text** (max 40 characters)\n"
+                f"Or send `/d` to **disable** this watermark location.\n\n"
+                f"<blockquote>Examples: Shahrukh Khan, Munna, My Batch Name</blockquote>",
+                reply_markup=back_kb
+            )
+            input_title = await bot_ref.listen(editable.chat.id)
+            try:
+                if input_title.text.strip().lower() == "/d":
+                    # Disable this location
+                    attr = location_key.replace("pdfwm_", "pdf_wm_")
+                    setattr(globals, attr, {"title": "/d", "url": "/d"})
+                    await editable.edit(f"✅ **{location_label}** watermark **disabled**.", reply_markup=back_kb)
+                    return
+
+                title_val = input_title.text.strip()[:40]
+
+                # Ask for URL
+                await editable.edit(
+                    f"**📑 {location_label} — Set Watermark**\n\n"
+                    f"**Step 2/2: Send URL** (must start with http:// or https://)\n"
+                    f"Or send `/d` if **no URL** needed (title-only watermark).\n\n"
+                    f"<blockquote>Title set: `{title_val}`</blockquote>",
+                    reply_markup=back_kb
+                )
+                input_url = await bot_ref.listen(editable.chat.id)
+                url_text = input_url.text.strip() if input_url.text else "/d"
+
+                if url_text.lower() == "/d" or not (url_text.startswith("http://") or url_text.startswith("https://")):
+                    url_val = "/d"
+                else:
+                    url_val = url_text
+
+                attr = location_key.replace("pdfwm_", "pdf_wm_")
+                setattr(globals, attr, {"title": title_val, "url": url_val})
+
+                url_info = f" with URL 🔗" if url_val != "/d" else " (title only)"
+                await editable.edit(
+                    f"✅ **{location_label}** watermark set!\n\n"
+                    f"**Title:** `{title_val}`\n"
+                    f"**URL:** `{url_val}`{url_info}",
+                    reply_markup=back_kb
+                )
+            except Exception as e:
+                await editable.edit(f"<b>❌ Error:</b>\n<blockquote>{str(e)}</blockquote>", reply_markup=back_kb)
+            finally:
+                try:
+                    await input_title.delete(True)
+                except Exception:
+                    pass
+                try:
+                    await input_url.delete(True)
+                except Exception:
+                    pass
+
+    _make_pdfwm_handler("pdfwm_upper_right", "↗️ Upper Right", bot)
+    _make_pdfwm_handler("pdfwm_upper_left",  "↖️ Upper Left",  bot)
+    _make_pdfwm_handler("pdfwm_down_right",  "↘️ Down Right",  bot)
+    _make_pdfwm_handler("pdfwm_down_left",   "↙️ Down Left",   bot)
+    _make_pdfwm_handler("pdfwm_down_middle", "⬇️ Down Middle", bot)
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
     @bot.on_callback_query(filters.regex("quality_command"))
     async def handle_quality(client, callback_query):
@@ -419,6 +499,12 @@ def register_settings_handlers(bot):
                 globals.quality = '480p'
                 globals.res = '854x480'
                 globals.topic = '/d'
+                # Reset multi-location PDF watermarks
+                globals.pdf_wm_upper_right = {"title": "/d", "url": "/d"}
+                globals.pdf_wm_upper_left  = {"title": "/d", "url": "/d"}
+                globals.pdf_wm_down_right  = {"title": "/d", "url": "/d"}
+                globals.pdf_wm_down_left   = {"title": "/d", "url": "/d"}
+                globals.pdf_wm_down_middle = {"title": "/d", "url": "/d"}
                 # ← pdfthumb persistent store bhi clear karo (settings reset = thumb bhi reset)
                 _THUMB_STORE = "pdfthumb_store.json"
                 import os as _os

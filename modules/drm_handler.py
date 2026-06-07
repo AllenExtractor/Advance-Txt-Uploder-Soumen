@@ -601,11 +601,11 @@ async def drm_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp --add-header "Referer:https://www.pw.live/" --add-header "Origin:https://www.pw.live" -f "{ytf}" -o "{namef}.mp4" "{url}"'
             else:
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{namef}.mp4"'
-#........................................................................................................................................................................................
+#.............................................................................................................................................................................................................
             try:
                 if m.text:
-                    cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} {res} @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-                    cc1 = f'**💾 𝐏𝐃𝐅_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                    cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} {res} @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                    cc1 = f'**💾 𝐏𝐃𝐅_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
                     cczip = f'[{name1}.zip]({link0})'
                     ccimg = f'[{name1}.jpg]({link0})'
                     ccm = f'[{name1}.mp3]({link0})'
@@ -613,20 +613,20 @@ async def drm_handler(bot: Client, m: Message):
                 else:
                     if topic == "/yes":
                         if caption == "/cc1":
-                            cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{v_name} [{res}p] @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞: {t_name}</b></blockquote>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-                            cc1 = f'**💾𝐏𝐃𝐅_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{v_name} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-                            cczip = f'[📁]Zip Id : {str(count).zfill(3)}\n**Zip Title :** `{v_name}.zip`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            ccimg = f'[🖼️]Img Id : {str(count).zfill(3)}\n**Img Title :** `{v_name}.jpg`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            cchtml = f'[🌐]Html Id : {str(count).zfill(3)}\n**Html Title :** `{v_name}.html`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            ccyt = f'[🎥]Vid Id : {str(count).zfill(3)}\n**Video Title :** `{v_name}.mp4`\n<a href="{url}">__**Click Here to Watch Stream**__</a>\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\nTopic Name : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            ccm = f'[🎵]Mp3 Id : {str(count).zfill(3)}\n**Audio Title :** `{v_name}.mp3`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
+                            cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{v_name} [{res}p] @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞: {t_name}</b></blockquote>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                            cc1 = f'**💾𝐏𝐃𝐅_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{v_name} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                            cczip = f'[📁]Zip Id : {str(count).zfill(3)}\n**Zip Title :** `{v_name}.zip`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
+                            ccimg = f'[🖼️]Img Id : {str(count).zfill(3)}\n**Img Title :** `{v_name}.jpg`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
+                            cchtml = f'[🌐]Html Id : {str(count).zfill(3)}\n**Html Title :** `{v_name}.html`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
+                            ccyt = f'[🎥]Vid Id : {str(count).zfill(3)}\n**Video Title :** `{v_name}.mp4`\n<a href="{url}">__**Click Here to Watch Stream**__</a>\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\nTopic Name : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤\n**★彡[{CR}]彡★\n'
+                            ccm = f'[🎵]Mp3 Id : {str(count).zfill(3)}\n**Audio Title :** `{v_name}.mp3`\n<blockquote><b>𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}\n𝐓𝐨𝐩𝐢𝐜 𝐍𝐚𝐦𝐞 : {t_name}</b></blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
                         elif caption == "/cc2":
-                            cc = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🎞️ 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.mkv</b>\n<b>├── Resolution : [{res}]</b>\n<blockquote><b>📚 Course : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cc1 = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>📁 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.pdf</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cczip = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>📒 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .zip</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            ccimg = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🖼️ 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .jpg</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            ccm = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🎵 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .mp3</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cchtml = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🌐 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .html</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
+                            cc = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🎞️ 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.mkv</b>\n<b>├── Resolution : [{res}]</b>\n<blockquote><b>📚 Course : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cc1 = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>📁 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.pdf</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cczip = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>📒 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .zip</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            ccimg = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🖼️ 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .jpg</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            ccm = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🎵 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .mp3</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cchtml = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<blockquote><b>⋅ ─  {t_name}  ─ ⋅</b></blockquote>\n\n<b>🌐 𝐓𝐢𝐭𝐥𝐞 :</b> {v_name}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .html</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
                         else:
                             cc = f'<blockquote><b>⋅ ─ {t_name} ─ ⋅</b></blockquote>\n<b>{str(count).zfill(3)}.</b> {v_name} [{res}p] @MR_Toxic_1.mkv'
                             cc1 = f'<blockquote><b>⋅ ─ {t_name} ─ ⋅</b></blockquote>\n<b>{str(count).zfill(3)}.</b> {v_name} @MR_Toxic_1.pdf'
@@ -636,19 +636,19 @@ async def drm_handler(bot: Client, m: Message):
                             cchtml = f'<blockquote><b>⋅ ─ {t_name} ─ ⋅</b></blockquote>\n<b>{str(count).zfill(3)}.</b> {v_name} .html'
                     else:
                         if caption == "/cc1":
-                            cc = f'**📹 𝐕𝐈𝐃_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{name1} [{res}p] @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-                            cc1 = f'**💾𝐏𝐃𝐅_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-                            cczip = f'[📁]Zip Id : {str(count).zfill(3)}\n**Zip Title :** `{name1}.zip`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n' 
-                            ccimg = f'[🖼️]Img Id : {str(count).zfill(3)}\n**Img Title :** `{name1}.jpg`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            ccm = f'[🎵]Audio Id : {str(count).zfill(3)}\n**Audio Title :** `{name1}.mp3`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
-                            cchtml = f'[🌐]Html Id : {str(count).zfill(3)}\n**Html Title :** `{name1}.html`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**{CR}\n'
+                            cc = f'**📹 𝐕𝐈𝐃_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{name1} [{res}p] @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                            cc1 = f'**💾𝐏𝐃𝐅_𝐈𝐃 : {str(count).zfill(3)}.\n\n📝𝐓𝐢𝐭𝐥𝐞 :{name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+                            cczip = f'[📁]Zip Id : {str(count).zfill(3)}\n**Zip Title :** `{name1}.zip`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n' 
+                            ccimg = f'[🖼️]Img Id : {str(count).zfill(3)}\n**Img Title :** `{name1}.jpg`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
+                            ccm = f'[🎵]Audio Id : {str(count).zfill(3)}\n**Audio Title :** `{name1}.mp3`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
+                            cchtml = f'[🌐]Html Id : {str(count).zfill(3)}\n**Html Title :** `{name1}.html`\n<blockquote><b>Batch Name :</b> {b_name}</blockquote>\n\n**𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤**★彡[{CR}]彡★\n'
                         elif caption == "/cc2":
-                            cc = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🎞️ 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.mkv</b>\n<b>├── Resolution : [{res}]</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cc1 = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>📁 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.pdf</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cczip = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>📒 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .zip</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            ccimg = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🖼️ 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .jpg</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            ccm = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🎵 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .mp3</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
-                            cchtml = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🌐 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .html</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}**"
+                            cc = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🎞️ 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.mkv</b>\n<b>├── Resolution : [{res}]</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cc1 = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>📁 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} @MR_Toxic_1.pdf</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cczip = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>📒 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .zip</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            ccimg = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🖼️ 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .jpg</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            ccm = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🎵 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .mp3</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
+                            cchtml = f"——— ✦ {str(count).zfill(3)} ✦ ———\n\n<b>🌐 𝐓𝐢𝐭𝐥𝐞 :</b> {name1}\n<b>├── 𝐄𝐱𝐭𝐞𝐧𝐭𝐢𝐨𝐧 :  {CR} .html</b>\n<blockquote><b>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 : {b_name}</b></blockquote>\n\n**🌟 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★**"
                         else:
                             cc = f'<b>{str(count).zfill(3)}.</b> {name1} [{res}p] @MR_Toxic_1.mkv'
                             cc1 = f'<b>{str(count).zfill(3)}.</b> {name1} @MR_Toxic_1.pdf'
@@ -937,6 +937,14 @@ def register_drm_handlers(bot):
 
         # Step 2: Check /download eligibility first
         if not _download_eligible.get(m.chat.id):
+            _sorry_sticker = await m.reply_sticker("CAACAgUAAxkBAAFLwyBqJYKK7stQ9LTqI_TQvdzxJXJffAAChBsAAj0q0VSY-1UNDwi17jsE")
+            _sorry_msg = await m.reply_text("𝐒𝐨𝐫𝐫𝐲 𝐁𝐚𝐜𝐡𝐜𝐡𝐚 𝐢𝐦 𝐧𝐨𝐭 𝐅𝐫𝐞𝐞🥺.")
+            await asyncio.sleep(2)
+            try:
+                await _sorry_sticker.delete()
+                await _sorry_msg.delete()
+            except Exception:
+                pass
             await m.reply_text(
                 "**⚠️ 𝐅𝐢𝐫𝐬𝐭 𝐆𝐨𝐭 𝐄𝐥𝐢𝐠𝐢𝐛𝐢𝐥𝐢𝐭𝐲. 𝐢𝐟 𝐲𝐨𝐮 𝐝𝐨𝐧'𝐭 𝐤𝐧𝐨𝐰 𝐡𝐨𝐰? 𝐭𝐨 𝐜𝐨𝐧𝐭𝐚𝐜𝐭 𝐭𝐨 𝐎𝐰𝐧𝐞𝐫.!**\n\n"
                 "**📋 Full Flow:**\n"
@@ -954,6 +962,32 @@ def register_drm_handlers(bot):
         _download_eligible.pop(m.chat.id, None)
 
         db.register_user(m.from_user.id)
+
+        # ── Random motivational sticker + message, auto-delete after 2s ──────
+        _love_motiv_stickers = [
+            "CAACAgUAAxkBAAFLwz1qJYR9CJvRxZNpNFbQDtDuZs9g6AAC_B0AAoxEwFRNgm0m4a44ODsE",
+            "CAACAgUAAxkBAAFLw0FqJYSa7J-QiG2T8oExq-W0G1WrYAAC9RUAAq648FdfdEW94V-04zsE",
+            "CAACAgUAAxkBAAFLw0lqJYTEao8xag6MEKiHJZDRlBqcdgACuRcAAnxjmVSiucshOSZZwDsE",
+            "CAACAgUAAxkBAAFLw01qJYTuEB8aG2ksI9Xt0vlKMmikyQACeRYAAscfKFYFrGeDecVVNDsE",
+            "CAACAgUAAxkBAAFLw1FqJYUeE-6jWln0UyLEhxE5lJawygACthYAAjQwGVYETvKjbMDpPjsE",
+        ]
+        _love_motiv_msgs = [
+            "Sapne dekhna achha hai,\npar unhe poora karne ke liye mehnat aur bhi zaroori hai. 🚀",
+            "Focus itna strong rakho ki excuses ko bhi entry na mile. 🎯",
+            "Slow progress bhi progress hoti hai. Bas rukna mat. 🚶‍♂️🔥",
+            "Luck kabhi kabhi saath deta hai,\nhard work roz deta hai. 💪",
+            "Aaj ki mehnat hi kal ki success story likhti hai.Keep grinding. 🔥",
+        ]
+        _midx = random.randint(0, 4)
+        _ms = await m.reply_sticker(_love_motiv_stickers[_midx])
+        _mm = await m.reply_text(_love_motiv_msgs[_midx])
+        await asyncio.sleep(2)
+        try:
+            await _ms.delete()
+            await _mm.delete()
+        except Exception:
+            pass
+        # ─────────────────────────────────────────────────────────────────────
 
         await m.reply_text(
             "**🔹𝐇𝐢 𝐈 𝐚𝐦 𝐏𝐨𝐰𝐞𝐫𝐟𝐮𝐥 𝐋𝐨𝐯𝐞𝐥𝐲 𝐓𝐗𝐓 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐫📥 𝐁𝐨𝐭.**\n"
@@ -973,8 +1007,8 @@ def register_drm_handlers(bot):
         _love_eligible.pop(m.chat.id, None)
 
         editable = await m.reply_text(
-            "**🔹𝐌𝐞𝐫𝐞 𝐁𝐚𝐛𝐮 𝐧𝐞 𝐭𝐡𝐚𝐧𝐚 𝐭𝐡𝐚𝐲𝐚💕**\n"
-            "**🔹𝐊𝐡𝐚𝐲𝐚𝐥 𝐫𝐚𝐤𝐡𝐨 𝐚𝐩𝐧𝐚 𝐁𝐚𝐜𝐡𝐜𝐡𝐚🥺.**"
+            "**🔹𝐈 𝐋𝐎𝐕𝐄 𝐘𝐎𝐔💕🔹**\n"
+            "**🔹𝐒𝐨𝐫𝐫𝐲 𝐒𝐨𝐫𝐫𝐲 𝐉𝐚𝐛𝐚𝐚𝐧 𝐟𝐢𝐬𝐚𝐥 𝐠𝐲𝐢🙆🏻‍♀️😁.**"
         )
 
         x = await m.download()
@@ -1004,6 +1038,24 @@ def register_drm_handlers(bot):
             await editable.edit("<b>🔹𝐈 𝐋𝐎𝐕𝐄 𝐘𝐎𝐔💕😘.</b>")
             return
 
+        # ── Step sticker tracking ─────────────────────────────────────────────
+        # We track the current step sticker so we can delete it before next step
+        _step_sticker_msg = [None]  # use list for mutability in nested scope
+
+        async def _send_step_sticker(file_id):
+            """Delete previous step sticker (if any), then send new one."""
+            if _step_sticker_msg[0]:
+                try:
+                    await _step_sticker_msg[0].delete()
+                except Exception:
+                    pass
+                _step_sticker_msg[0] = None
+            s = await bot.send_sticker(chat_id=m.chat.id, sticker=file_id)
+            _step_sticker_msg[0] = s
+        # ─────────────────────────────────────────────────────────────────────
+
+        # Step 1 sticker — total links found
+        await _send_step_sticker("CAACAgQAAxkBAAFLw2xqJYZ7bpEUbaLHEV_yYaduL1twAwACVRUAAnOxYFCUkyy9GwdwoTsE")
         await editable.edit(f"**🔹𝐓𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐤𝐬 𝐟𝐨𝐮𝐧𝐝 𝐚𝐫𝐞 {len(links)}\n\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🙄 𝐢𝐧𝐢𝐭𝐢𝐚𝐥 𝐢𝐬 𝟏**")
         try:
             input0: Message = await bot.listen(editable.chat.id, timeout=200)
@@ -1017,6 +1069,8 @@ def register_drm_handlers(bot):
         except:
             arg = 1
 
+        # Step 2 sticker — batch name
+        await _send_step_sticker("CAACAgUAAxkBAAFLw3JqJYbqO421dDdvNRC197WzZaU8UQACKxwAAgKKUFcQeyGJcriEPDsE")
         await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐘𝐨𝐮𝐫 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞 𝐨𝐫 𝐬𝐞𝐧𝐝 '/Sis' 𝐟𝐨𝐫 𝐞𝐱𝐭𝐫𝐚𝐜𝐭𝐢𝐧𝐠 𝐧𝐚𝐦𝐞 𝐟𝐫𝐨𝐦 𝐲𝐨𝐮𝐫 𝐭𝐞𝐱𝐭 𝐟𝐢𝐥𝐞𝐧𝐚𝐦𝐞🧐.**")
         try:
             input1: Message = await bot.listen(editable.chat.id, timeout=200)
@@ -1030,6 +1084,8 @@ def register_drm_handlers(bot):
         else:
             b_name = raw_text0
 
+        # Step 3 sticker — resolution
+        await _send_step_sticker("CAACAgUAAxkBAAFLw3pqJYcyhdCaDF9WRHkKO-XAvQAB8DIAAhAaAAIw1GBUriPKMWXwWUE7BA")
         await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐫𝐞𝐬𝐨𝐥𝐮𝐭𝐢𝐨𝐧.\n 𝐄𝐠 : 𝟏𝟒𝟒, 𝟐𝟒𝟎, 𝟑𝟔𝟎, 𝟒𝟖𝟎, 𝟕𝟐𝟎 𝐨𝐫 𝟏𝟎𝟖𝟎😚.**")
         try:
             input2: Message = await bot.listen(editable.chat.id, timeout=300)
@@ -1057,6 +1113,8 @@ def register_drm_handlers(bot):
             res = "UN"
         quality = f"{raw_text2}p"
 
+        # Step 4 sticker — PW Token
+        await _send_step_sticker("CAACAgQAAxkBAAFLw4FqJYemxVElqiQscDS2OSEkXp9s_QACJxcAAmGhaVAI30M7d2jcrDsE")
         await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐘𝐨𝐮𝐫 𝐏𝐖 𝐓𝐨𝐤𝐞𝐧 𝐅𝐨𝐫 𝐌𝐏𝐃 𝐔𝐑𝐋 𝐨𝐫 𝐬𝐞𝐧𝐝 /Vip 𝐭𝐨 𝐮𝐬𝐞 𝐘𝐨𝐮𝐫 𝐒𝐞𝐭 𝐓𝐨𝐤𝐞𝐧(𝐢𝐧 𝐒𝐞𝐭𝐭𝐢𝐧𝐠𝐬)😄.**")
         try:
             input_tok: Message = await bot.listen(editable.chat.id, timeout=300)
@@ -1070,6 +1128,8 @@ def register_drm_handlers(bot):
         else:
             pwtoken = raw_tok
 
+        # Step 5 sticker — Credit Name
+        await _send_step_sticker("CAACAgQAAxkBAAFLw4ZqJYfqOQSmDNv3F0APDsBNFi9mTgACZRYAArIZOFCPCO4ShJZFUTsE")
         await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐘𝐨𝐮𝐫 𝐂𝐫𝐞𝐝𝐢𝐭 𝐍𝐚𝐦𝐞 𝐨𝐫 𝐬𝐞𝐧𝐝 /Sobi 𝐭𝐨 𝐔𝐬𝐞 𝐘𝐨𝐮𝐫 𝐎𝐰𝐧 𝐂𝐫𝐞𝐝𝐢𝐭 𝐍𝐚𝐦𝐞(𝐢𝐧 𝐭𝐡𝐞 𝐒𝐞𝐭𝐭𝐢𝐧𝐠𝐬).\n𝐀𝐥𝐬𝐨 𝐒𝐮𝐩𝐩𝐨𝐫𝐭𝐬: *𝐓𝐞𝐱𝐭|𝐔𝐑𝐋* 𝐟𝐨𝐫 𝐡𝐲𝐩𝐞𝐫𝐥𝐢𝐧𝐤.🌚**")
         try:
             input3: Message = await bot.listen(editable.chat.id, timeout=200)
@@ -1083,6 +1143,8 @@ def register_drm_handlers(bot):
         else:
             CR = parse_credit(raw_text3)
 
+        # Step 6 sticker — Thumb URL
+        await _send_step_sticker("CAACAgUAAxkBAAFLw45qJYgpmN9L66xcZY1nm-TsyYVCcwACZA8AAs6JKFd5oMJ8j6TLejsE")
         await editable.edit("**🔹𝐍𝐨𝐰 𝐬𝐞𝐧𝐝 𝐭𝐡𝐞 𝐓𝐡𝐮𝐦𝐛 𝐔𝐑𝐋\n𝐄𝐠: 𝐌𝐮𝐬𝐭 𝐛𝐞 𝐄𝐧𝐝 𝐖𝐢𝐭𝐡 .𝐣𝐩𝐠\n\n𝐎𝐫 𝐒𝐞𝐧𝐝 `no`**")
         try:
             input6: Message = await bot.listen(editable.chat.id, timeout=200)
@@ -1118,6 +1180,8 @@ def register_drm_handlers(bot):
         else:
             thumb_local = globals.thumb
 
+        # Step 7 sticker — Channel ID
+        await _send_step_sticker("CAACAgUAAxkBAAFLw51qJYiTAo_1ZboOwLrPxf1hphyRUgACSxYAAsVdiFYZ_nbcdcEp-DsE")
         await editable.edit("**🔹𝐒𝐞𝐧𝐝 𝐭𝐡𝐞 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 𝐈𝐃 𝐨𝐫 𝐬𝐞𝐧𝐝 /Baby**\n\n<blockquote><i>🔹 𝐌𝐚𝐤𝐞 𝐦𝐞 𝐚𝐧 𝐚𝐝𝐦𝐢𝐧 𝐬𝐨 𝐭𝐡𝐚𝐭 𝐢 𝐜𝐚𝐧 𝐮𝐩𝐥𝐨𝐚𝐝.\n\n𝐄𝐱𝐚𝐦𝐩𝐥𝐞: 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 𝐈𝐃 = -𝟏𝟎𝟎𝟏𝟒𝟑𝐗𝐗𝐗𝐗𝐗𝟕𝟖𝟔</i></blockquote>")
         try:
             input7: Message = await bot.listen(editable.chat.id, timeout=200)
@@ -1131,6 +1195,14 @@ def register_drm_handlers(bot):
         else:
             channel_id = raw_text7
         await editable.delete()
+
+        # Delete last step sticker now that all inputs are done
+        if _step_sticker_msg[0]:
+            try:
+                await _step_sticker_msg[0].delete()
+            except Exception:
+                pass
+            _step_sticker_msg[0] = None
 
         # Send batch start message
         try:
@@ -1155,6 +1227,44 @@ def register_drm_handlers(bot):
         vidwatermark_local = globals.vidwatermark
         path = f"./downloads/{m.chat.id}"
         os.makedirs(path, exist_ok=True)
+
+        # Downloading / Uploading sticker tracker for loop
+        _dl_sticker = [None]  # downloading sticker
+        _ul_sticker = [None]  # uploading sticker
+
+        async def _send_downloading_sticker():
+            """Send downloading sticker, delete previous if any."""
+            for s in (_dl_sticker[0], _ul_sticker[0]):
+                if s:
+                    try:
+                        await s.delete()
+                    except Exception:
+                        pass
+            _dl_sticker[0] = None
+            _ul_sticker[0] = None
+            s = await bot.send_sticker(chat_id=m.chat.id, sticker="CAACAgUAAxkBAAFLw-9qJYmxQuEazhtfMG6b4kJ6XjFX6gACVhUAAhKqiVYhgBCWUT9FcDsE")
+            _dl_sticker[0] = s
+
+        async def _send_uploading_sticker():
+            """Delete downloading sticker, send uploading sticker."""
+            if _dl_sticker[0]:
+                try:
+                    await _dl_sticker[0].delete()
+                except Exception:
+                    pass
+                _dl_sticker[0] = None
+            s = await bot.send_sticker(chat_id=m.chat.id, sticker="CAACAgUAAxkBAAFLw_pqJYo16P0_7E_vl_tEa8K2vtGbNgACoRYAAu6ciVYnb_DvfxUibTsE")
+            _ul_sticker[0] = s
+
+        async def _delete_uploading_sticker():
+            """Delete uploading sticker after file is sent."""
+            if _ul_sticker[0]:
+                try:
+                    await _ul_sticker[0].delete()
+                except Exception:
+                    pass
+                _ul_sticker[0] = None
+        # ─────────────────────────────────────────────────────────────────────
 
         for i in range(arg - 1, len(links)):
             if globals.cancel_requested:
@@ -1267,8 +1377,8 @@ def register_drm_handlers(bot):
             else:
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{namef}.mp4"'
 
-            cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} {res} @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
-            cc1 = f'**💾 𝐏𝐃𝐅_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ : {CR}\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+            cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} {res} @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
+            cc1 = f'**💾 𝐏𝐃𝐅_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
             cczip = f'[{name1}.zip]({link0})'
             ccimg = f'[{name1}.jpg]({link0})'
             ccm = f'[{name1}.mp3]({link0})'
@@ -1296,8 +1406,11 @@ def register_drm_handlers(bot):
             try:
                 if "drive" in url:
                     try:
+                        await _send_downloading_sticker()
                         ka = await helper.download(url, namef)
+                        await _send_uploading_sticker()
                         await helper.send_doc(bot, m, None, ka, cc1, None, count, name, channel_id, globals.pdfwatermark, globals.pdfthumb)
+                        await _delete_uploading_sticker()
                         count += 1
                     except FloodWait as e:
                         await m.reply_text(str(e))
@@ -1310,6 +1423,7 @@ def register_drm_handlers(bot):
                         retry_delay = 4
                         success = False
                         failure_msgs = []
+                        await _send_downloading_sticker()
                         for attempt in range(max_retries):
                             try:
                                 await asyncio.sleep(retry_delay)
@@ -1320,7 +1434,9 @@ def register_drm_handlers(bot):
                                     with open(f'{namef}.pdf', 'wb') as file:
                                         file.write(response.content)
                                     await asyncio.sleep(retry_delay)
+                                    await _send_uploading_sticker()
                                     await helper.send_doc(bot, m, None, f'{namef}.pdf', cc1, None, count, name, channel_id, globals.pdfwatermark, globals.pdfthumb)
+                                    await _delete_uploading_sticker()
                                     count += 1
                                     success = True
                                     break
@@ -1336,10 +1452,13 @@ def register_drm_handlers(bot):
                             await msg.delete()
                     else:
                         try:
+                            await _send_downloading_sticker()
                             pdf_cmd = f'yt-dlp -o "{namef}.pdf" "{url}" -R 25 --fragment-retries 25'
                             result = subprocess.run(pdf_cmd, shell=True, timeout=300)
                             if os.path.exists(f'{namef}.pdf'):
+                                await _send_uploading_sticker()
                                 await helper.send_doc(bot, m, None, f'{namef}.pdf', cc1, None, count, name, channel_id, globals.pdfwatermark, globals.pdfthumb)
+                                await _delete_uploading_sticker()
                             else:
                                 await send_failed_notice(bot, channel_id, count, name1, link0, "PDF download failed: yt-dlp could not download")
                             count += 1
@@ -1384,6 +1503,7 @@ def register_drm_handlers(bot):
                 elif 'encrypted.m' in url:
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
+                    await _send_downloading_sticker()
                     res_file = await helper.download_and_decrypt_video(url, cmd, namef, appxkey)
                     filename = res_file
                     await prog1.delete(True)
@@ -1394,7 +1514,9 @@ def register_drm_handlers(bot):
                         globals.processing_request = False
                         globals.cancel_requested = False
                         return
+                    await _send_uploading_sticker()
                     await helper.send_vid(bot, m, cc, filename, vidwatermark_local, thumb_local, name, prog, channel_id)
+                    await _delete_uploading_sticker()
                     count += 1
                     await asyncio.sleep(1)
                     continue
@@ -1402,6 +1524,7 @@ def register_drm_handlers(bot):
                 elif 'drmcdni' in url or 'drm/wv' in url or 'drm/common' in url:
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
+                    await _send_downloading_sticker()
                     res_file = await helper.decrypt_and_merge_video(mpd, keys_string, path, namef, raw_text2)
                     filename = res_file
                     await prog1.delete(True)
@@ -1412,7 +1535,9 @@ def register_drm_handlers(bot):
                         globals.processing_request = False
                         globals.cancel_requested = False
                         return
+                    await _send_uploading_sticker()
                     await helper.send_vid(bot, m, cc, filename, vidwatermark_local, thumb_local, name, prog, channel_id)
+                    await _delete_uploading_sticker()
                     count += 1
                     await asyncio.sleep(1)
                     continue
@@ -1420,6 +1545,7 @@ def register_drm_handlers(bot):
                 else:
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
+                    await _send_downloading_sticker()
                     res_file = await helper.download_video(url, cmd, namef)
                     filename = res_file
                     await prog1.delete(True)
@@ -1430,7 +1556,9 @@ def register_drm_handlers(bot):
                         globals.processing_request = False
                         globals.cancel_requested = False
                         return
+                    await _send_uploading_sticker()
                     await helper.send_vid(bot, m, cc, filename, vidwatermark_local, thumb_local, name, prog, channel_id)
+                    await _delete_uploading_sticker()
                     count += 1
                     time.sleep(1)
 
@@ -1464,6 +1592,9 @@ def register_drm_handlers(bot):
                 m.chat.id,
                 f"<blockquote><b>💕𝐘𝐨𝐮𝐫 𝐓𝐚𝐬𝐤 𝐢𝐬 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞𝐝,𝐩𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐒𝐞𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥📱.</b></blockquote>"
             )
+
+        # All Done sticker — permanent, never deleted
+        await bot.send_sticker(chat_id=m.chat.id, sticker="CAACAgUAAxkBAAFLxDJqJYzryKgZcWZtin7lqy9ow7RySgACmBgAAvdHgVZGgMRANL1aFzsE")
 
         # Cleanup temp thumb if downloaded
         if thumb_local != globals.thumb and os.path.exists(str(thumb_local)):

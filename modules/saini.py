@@ -334,6 +334,122 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
         return False
 
 
+async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
+    """
+    Apply multiple watermarks at different locations on every PDF page.
+
+    wm_configs: list of dicts, each:
+      {
+        "title": str,           # watermark text
+        "url": str | "/d",      # clickable URL or "/d" for none
+        "x_frac": float,        # x position as fraction of page_width
+        "y_frac": float,        # y position as fraction of page_height
+        "opacity": float,       # 0.0 - 1.0
+        "rotation": float,      # degrees
+        "anchor": str           # "center", "left", "right"
+      }
+    Skips any config where title == "/d".
+    Returns True on success.
+    """
+    try:
+        import io
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.colors import Color
+        from reportlab.platypus import Paragraph
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.units import pt
+
+        try:
+            from pypdf import PdfReader, PdfWriter
+        except ImportError:
+            from PyPDF2 import PdfReader, PdfWriter
+
+        # Filter out disabled configs
+        active = [c for c in wm_configs if c.get("title", "/d") != "/d"]
+        if not active:
+            # Nothing to apply — just copy
+            import shutil
+            shutil.copy2(input_pdf, output_pdf)
+            return True
+
+        reader = PdfReader(input_pdf)
+        writer = PdfWriter()
+
+        for page in reader.pages:
+            page_width  = float(page.mediabox.width)
+            page_height = float(page.mediabox.height)
+
+            # Start with the original page
+            merged_page = page
+
+            for cfg in active:
+                title    = cfg["title"]
+                url      = cfg.get("url", "/d")
+                x_frac   = cfg.get("x_frac", 0.80)
+                y_frac   = cfg.get("y_frac", 0.85)
+                opacity  = cfg.get("opacity", 0.30)
+                rotation = cfg.get("rotation", 0.0)
+                anchor   = cfg.get("anchor", "center")
+
+                font_size = max(8, int(page_width / 28))
+                x_pos = page_width  * x_frac
+                y_pos = page_height * y_frac
+
+                packet = io.BytesIO()
+                c = canvas.Canvas(packet, pagesize=(page_width, page_height))
+                c.saveState()
+                c.setFillColor(Color(0, 0, 0, alpha=opacity))
+                c.setFont("Helvetica-Bold", font_size)
+                c.translate(x_pos, y_pos)
+                if rotation:
+                    c.rotate(rotation)
+
+                # Draw text (with or without URL link annotation)
+                if anchor == "left":
+                    c.drawString(0, 0, title)
+                elif anchor == "right":
+                    c.drawRightString(0, 0, title)
+                else:
+                    c.drawCentredString(0, 0, title)
+
+                # Add URL link annotation if set
+                if url and url != "/d":
+                    try:
+                        text_width = c.stringWidth(title, "Helvetica-Bold", font_size)
+                        if anchor == "center":
+                            lx, ly = -text_width / 2, -font_size * 0.3
+                        elif anchor == "right":
+                            lx, ly = -text_width, -font_size * 0.3
+                        else:
+                            lx, ly = 0, -font_size * 0.3
+                        lw, lh = text_width, font_size * 1.2
+                        c.linkURL(url, (lx, ly, lx + lw, ly + lh), relative=1)
+                    except Exception as link_err:
+                        print(f"PDF WM link error: {link_err}")
+
+                c.restoreState()
+                c.save()
+                packet.seek(0)
+
+                try:
+                    from pypdf import PdfReader as _PR
+                except ImportError:
+                    from PyPDF2 import PdfReader as _PR
+
+                wm_reader = _PR(packet)
+                wm_page   = wm_reader.pages[0]
+                merged_page.merge_page(wm_page)
+
+            writer.add_page(merged_page)
+
+        with open(output_pdf, "wb") as f_out:
+            writer.write(f_out)
+        return True
+    except Exception as e:
+        print(f"PDF multi-watermark error: {e}")
+        return False
+
+
 # ── PDF Thumbnail downloader — graph.org .jpg URL support + Telegram file_id support ──
 async def download_pdf_thumbnail(pdfthumb_url: str, bot=None) -> str | None:
     """
@@ -444,6 +560,63 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
             ka = named_pdf
         except Exception as rename_err:
             print(f"PDF rename error: {rename_err}")
+
+    # ── Apply multi-location PDF watermarks (5 positions) ────────────────────
+    try:
+        import globals as _g
+        _wm_configs = []
+        # Upper Right: 30% opacity, 45° rotation
+        ur = getattr(_g, "pdf_wm_upper_right", {"title": "/d", "url": "/d"})
+        if ur.get("title", "/d") != "/d":
+            _wm_configs.append({"title": ur["title"], "url": ur.get("url", "/d"),
+                                 "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
+                                 "rotation": 45.0, "anchor": "center"})
+        # Upper Left: 30% opacity, 0° rotation
+        ul = getattr(_g, "pdf_wm_upper_left", {"title": "/d", "url": "/d"})
+        if ul.get("title", "/d") != "/d":
+            _wm_configs.append({"title": ul["title"], "url": ul.get("url", "/d"),
+                                 "x_frac": 0.15, "y_frac": 0.85, "opacity": 0.30,
+                                 "rotation": 0.0, "anchor": "left"})
+        # Down Right: 90% opacity, 0° rotation
+        dr = getattr(_g, "pdf_wm_down_right", {"title": "/d", "url": "/d"})
+        if dr.get("title", "/d") != "/d":
+            _wm_configs.append({"title": dr["title"], "url": dr.get("url", "/d"),
+                                 "x_frac": 0.80, "y_frac": 0.06, "opacity": 0.90,
+                                 "rotation": 0.0, "anchor": "right"})
+        # Down Left: 30% opacity, 0° rotation
+        dl = getattr(_g, "pdf_wm_down_left", {"title": "/d", "url": "/d"})
+        if dl.get("title", "/d") != "/d":
+            _wm_configs.append({"title": dl["title"], "url": dl.get("url", "/d"),
+                                 "x_frac": 0.15, "y_frac": 0.06, "opacity": 0.30,
+                                 "rotation": 0.0, "anchor": "left"})
+        # Down Middle: 95% opacity, 0° rotation
+        dm = getattr(_g, "pdf_wm_down_middle", {"title": "/d", "url": "/d"})
+        if dm.get("title", "/d") != "/d":
+            _wm_configs.append({"title": dm["title"], "url": dm.get("url", "/d"),
+                                 "x_frac": 0.50, "y_frac": 0.04, "opacity": 0.95,
+                                 "rotation": 0.0, "anchor": "center"})
+
+        if _wm_configs:
+            _mwm_input = final_pdf  # apply on top of whatever we have so far
+            _mwm_output = f"@MR_Toxic_1_{safe_name}_mwm.pdf"
+            _mwm_success = await asyncio.wait_for(
+                apply_pdf_watermark_multi(_mwm_input, _mwm_output, _wm_configs),
+                timeout=180
+            )
+            if _mwm_success and os.path.exists(_mwm_output):
+                # Remove previous watermarked file if different
+                if final_pdf != ka and os.path.exists(final_pdf):
+                    try:
+                        os.remove(final_pdf)
+                    except Exception:
+                        pass
+                final_pdf = _mwm_output
+                watermarked = True
+    except asyncio.TimeoutError:
+        print("PDF multi-watermark timed out")
+    except Exception as _mwm_err:
+        print(f"PDF multi-watermark apply error: {_mwm_err}")
+    # ─────────────────────────────────────────────────────────────────────────
 
     # ── PDF Thumbnail — 5 retries, 45s total, graph.org .jpg + Telegram file_id support ──
     thumbnail = None
