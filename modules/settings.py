@@ -356,8 +356,10 @@ def register_settings_handlers(bot):
                 f"<blockquote>Examples: Shahrukh Khan, Munna, My Batch Name</blockquote>",
                 reply_markup=back_kb
             )
-            input_title = await bot_ref.listen(editable.chat.id)
+            input_title = None
+            input_url = None
             try:
+                input_title = await bot_ref.listen(editable.chat.id)
                 if input_title.text.strip().lower() == "/d":
                     # Disable this location
                     attr = location_key.replace("pdfwm_", "pdf_wm_")
@@ -397,11 +399,13 @@ def register_settings_handlers(bot):
                 await editable.edit(f"<b>❌ Error:</b>\n<blockquote>{str(e)}</blockquote>", reply_markup=back_kb)
             finally:
                 try:
-                    await input_title.delete(True)
+                    if input_title is not None:
+                        await input_title.delete(True)
                 except Exception:
                     pass
                 try:
-                    await input_url.delete(True)
+                    if input_url is not None:
+                        await input_url.delete(True)
                 except Exception:
                     pass
 

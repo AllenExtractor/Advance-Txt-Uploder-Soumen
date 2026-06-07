@@ -300,7 +300,6 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
             # Build watermark layer
             packet = io.BytesIO()
             c = canvas.Canvas(packet, pagesize=(page_width, page_height))
-            c.saveState()
 
             font_size = max(10, int(page_width / 22))
             # 30% opacity black text (visible on white background PDFs)
@@ -311,7 +310,10 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
             c.translate(page_width * 0.80, page_height * 0.85)
             c.rotate(45)
             c.drawCentredString(0, 0, watermark_text)
-            c.restoreState()
+            # NOTE: restoreState() removed intentionally — it reverts translate/rotate
+            # which causes drawn text coordinates to be wrong in the PDF stream.
+            # saveState/restoreState are only needed when we want to isolate state;
+            # here we just need the canvas finalized with the drawn text.
             c.save()
 
             packet.seek(0)
@@ -397,7 +399,6 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
 
                 packet = io.BytesIO()
                 c = canvas.Canvas(packet, pagesize=(page_width, page_height))
-                c.saveState()
                 c.setFillColor(Color(0, 0, 0, alpha=opacity))
                 c.setFont("Helvetica-Bold", font_size)
                 c.translate(x_pos, y_pos)
@@ -413,21 +414,26 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                     c.drawCentredString(0, 0, title)
 
                 # Add URL link annotation if set
+                # linkURL uses absolute page coords, so calculate from x_pos/y_pos
                 if url and url != "/d":
                     try:
                         text_width = c.stringWidth(title, "Helvetica-Bold", font_size)
                         if anchor == "center":
-                            lx, ly = -text_width / 2, -font_size * 0.3
+                            abs_lx = x_pos - text_width / 2
                         elif anchor == "right":
-                            lx, ly = -text_width, -font_size * 0.3
+                            abs_lx = x_pos - text_width
                         else:
-                            lx, ly = 0, -font_size * 0.3
-                        lw, lh = text_width, font_size * 1.2
-                        c.linkURL(url, (lx, ly, lx + lw, ly + lh), relative=1)
+                            abs_lx = x_pos
+                        abs_ly = y_pos - font_size * 0.3
+                        abs_lw = text_width
+                        abs_lh = font_size * 1.2
+                        # Use absolute coords (relative=0) — not relative to current transform
+                        c.linkURL(url, (abs_lx, abs_ly, abs_lx + abs_lw, abs_ly + abs_lh), relative=0)
                     except Exception as link_err:
                         print(f"PDF WM link error: {link_err}")
 
-                c.restoreState()
+                # NOTE: No restoreState() — it would corrupt the already-drawn
+                # text's coordinate stream. Just finalize the canvas directly.
                 c.save()
                 packet.seek(0)
 
