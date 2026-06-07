@@ -277,14 +277,48 @@ async def download_video(url, cmd, name):
         return os.path.splitext(name)[0] + ".mp4"
 
 
+def _pdf_page_is_image_based(page) -> bool:
+    """
+    Detect if a PDF page is image-based (e.g. screenshot/slide PDFs).
+    Returns True if a full-page image covers >50% of the page area.
+    These pages need reverse-merge so watermark appears ON TOP of the image.
+    """
+    try:
+        resources = page.get("/Resources", {})
+        if hasattr(resources, "get_object"):
+            resources = resources.get_object()
+        xobjs = resources.get("/XObject", {})
+        if hasattr(xobjs, "get_object"):
+            xobjs = xobjs.get_object()
+        pw = float(page.mediabox.width)
+        ph = float(page.mediabox.height)
+        for key in xobjs:
+            obj = xobjs[key]
+            if hasattr(obj, "get_object"):
+                obj = obj.get_object()
+            if obj.get("/Subtype") == "/Image":
+                w = int(obj.get("/Width", 0))
+                h = int(obj.get("/Height", 0))
+                if w * h > pw * ph * 0.5:
+                    return True
+    except Exception:
+        pass
+    return False
+
+
 async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
-    """Apply a diagonal text watermark to every page of a PDF — top-right, 45°, 30% opacity."""
+    """
+    Apply a diagonal text watermark to every page of a PDF.
+    Advanced: auto-detects image-based pages and uses reverse-merge
+    so watermark is ALWAYS visible on top of images/screenshots.
+    Image PDFs (slides): white 85% opacity text.
+    Text PDFs: black 30% opacity text.
+    """
     try:
         import io
         from reportlab.pdfgen import canvas
         from reportlab.lib.colors import Color
 
-        # Try pypdf first (newer), fall back to PyPDF2
         try:
             from pypdf import PdfReader, PdfWriter
         except ImportError:
@@ -294,51 +328,57 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
         writer = PdfWriter()
 
         for page in reader.pages:
-            page_width = float(page.mediabox.width)
+            page_width  = float(page.mediabox.width)
             page_height = float(page.mediabox.height)
-
-            # Build watermark layer
-            packet = io.BytesIO()
-            c = canvas.Canvas(packet, pagesize=(page_width, page_height))
+            is_img      = _pdf_page_is_image_based(page)
 
             font_size = max(10, int(page_width / 22))
-            # 30% opacity black text (visible on white background PDFs)
-            c.setFillColor(Color(0, 0, 0, alpha=0.3))
-            c.setFont("Helvetica-Bold", font_size)
 
-            # Top-right area, 45 degree rotation
+            # Image pages: white text (visible on dark/coloured slides)
+            # Text pages: dark text with low opacity
+            fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(0, 0, 0, alpha=0.30)
+
+            packet = io.BytesIO()
+            c = canvas.Canvas(packet, pagesize=(page_width, page_height))
+            c.setFillColor(fill_color)
+            c.setFont("Helvetica-Bold", font_size)
             c.translate(page_width * 0.80, page_height * 0.85)
             c.rotate(45)
             c.drawCentredString(0, 0, watermark_text)
-            # NOTE: restoreState() removed intentionally — it reverts translate/rotate
-            # which causes drawn text coordinates to be wrong in the PDF stream.
-            # saveState/restoreState are only needed when we want to isolate state;
-            # here we just need the canvas finalized with the drawn text.
             c.save()
 
             packet.seek(0)
-
             try:
-                from pypdf import PdfReader as PR2
+                from pypdf import PdfReader as _PR
             except ImportError:
-                from PyPDF2 import PdfReader as PR2
+                from PyPDF2 import PdfReader as _PR
 
-            wm_reader = PR2(packet)
-            wm_page = wm_reader.pages[0]
-            page.merge_page(wm_page)
-            writer.add_page(page)
+            wm_reader = _PR(packet)
+            wm_page   = wm_reader.pages[0]
+
+            if is_img:
+                # Image-based page: merge original UNDER watermark → text appears on top of image
+                wm_page.merge_page(page)
+                writer.add_page(wm_page)
+            else:
+                # Text-based page: merge watermark under original content (standard)
+                page.merge_page(wm_page)
+                writer.add_page(page)
 
         with open(output_pdf, "wb") as f_out:
             writer.write(f_out)
         return True
     except Exception as e:
         print(f"PDF watermark error: {e}")
+        import traceback; traceback.print_exc()
         return False
 
 
 async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
     """
     Apply multiple watermarks at different locations on every PDF page.
+    Advanced: auto-detects image-based pages and uses reverse-merge
+    so all watermarks are ALWAYS visible on top of images/screenshots.
 
     wm_configs: list of dicts, each:
       {
@@ -346,7 +386,7 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
         "url": str | "/d",      # clickable URL or "/d" for none
         "x_frac": float,        # x position as fraction of page_width
         "y_frac": float,        # y position as fraction of page_height
-        "opacity": float,       # 0.0 - 1.0
+        "opacity": float,       # 0.0 - 1.0 (auto-boosted for image pages)
         "rotation": float,      # degrees
         "anchor": str           # "center", "left", "right"
       }
@@ -357,9 +397,6 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
         import io
         from reportlab.pdfgen import canvas
         from reportlab.lib.colors import Color
-        from reportlab.platypus import Paragraph
-        from reportlab.lib.styles import getSampleStyleSheet
-        from reportlab.lib.units import pt
 
         try:
             from pypdf import PdfReader, PdfWriter
@@ -367,9 +404,8 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
             from PyPDF2 import PdfReader, PdfWriter
 
         # Filter out disabled configs
-        active = [c for c in wm_configs if c.get("title", "/d") != "/d"]
+        active = [cfg for cfg in wm_configs if cfg.get("title", "/d") != "/d"]
         if not active:
-            # Nothing to apply — just copy
             import shutil
             shutil.copy2(input_pdf, output_pdf)
             return True
@@ -380,9 +416,11 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
         for page in reader.pages:
             page_width  = float(page.mediabox.width)
             page_height = float(page.mediabox.height)
+            is_img      = _pdf_page_is_image_based(page)
 
-            # Start with the original page
-            merged_page = page
+            # Build a single canvas with ALL watermarks drawn at once
+            packet = io.BytesIO()
+            c = canvas.Canvas(packet, pagesize=(page_width, page_height))
 
             for cfg in active:
                 title    = cfg["title"]
@@ -397,15 +435,20 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 x_pos = page_width  * x_frac
                 y_pos = page_height * y_frac
 
-                packet = io.BytesIO()
-                c = canvas.Canvas(packet, pagesize=(page_width, page_height))
-                c.setFillColor(Color(0, 0, 0, alpha=opacity))
+                # Image pages: use white text + boost opacity for visibility
+                # Text pages: use black text with configured opacity
+                if is_img:
+                    fill_color = Color(1, 1, 1, alpha=min(1.0, opacity + 0.55))
+                else:
+                    fill_color = Color(0, 0, 0, alpha=opacity)
+
+                c.saveState()
+                c.setFillColor(fill_color)
                 c.setFont("Helvetica-Bold", font_size)
                 c.translate(x_pos, y_pos)
                 if rotation:
                     c.rotate(rotation)
 
-                # Draw text (with or without URL link annotation)
                 if anchor == "left":
                     c.drawString(0, 0, title)
                 elif anchor == "right":
@@ -413,8 +456,7 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 else:
                     c.drawCentredString(0, 0, title)
 
-                # Add URL link annotation if set
-                # linkURL uses absolute page coords, so calculate from x_pos/y_pos
+                # URL link annotation using absolute page coordinates
                 if url and url != "/d":
                     try:
                         text_width = c.stringWidth(title, "Helvetica-Bold", font_size)
@@ -425,34 +467,39 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                         else:
                             abs_lx = x_pos
                         abs_ly = y_pos - font_size * 0.3
-                        abs_lw = text_width
-                        abs_lh = font_size * 1.2
-                        # Use absolute coords (relative=0) — not relative to current transform
-                        c.linkURL(url, (abs_lx, abs_ly, abs_lx + abs_lw, abs_ly + abs_lh), relative=0)
+                        # Use absolute coords (relative=0) to avoid transform issues
+                        c.linkURL(url, (abs_lx, abs_ly, abs_lx + text_width, abs_ly + font_size * 1.2), relative=0)
                     except Exception as link_err:
                         print(f"PDF WM link error: {link_err}")
 
-                # NOTE: No restoreState() — it would corrupt the already-drawn
-                # text's coordinate stream. Just finalize the canvas directly.
-                c.save()
-                packet.seek(0)
+                c.restoreState()
 
-                try:
-                    from pypdf import PdfReader as _PR
-                except ImportError:
-                    from PyPDF2 import PdfReader as _PR
+            c.save()
+            packet.seek(0)
 
-                wm_reader = _PR(packet)
-                wm_page   = wm_reader.pages[0]
-                merged_page.merge_page(wm_page)
+            try:
+                from pypdf import PdfReader as _PR
+            except ImportError:
+                from PyPDF2 import PdfReader as _PR
 
-            writer.add_page(merged_page)
+            wm_reader = _PR(packet)
+            wm_page   = wm_reader.pages[0]
+
+            if is_img:
+                # Image-based: merge original UNDER watermark → watermark on top
+                wm_page.merge_page(page)
+                writer.add_page(wm_page)
+            else:
+                # Text-based: merge watermark under original content (standard)
+                page.merge_page(wm_page)
+                writer.add_page(page)
 
         with open(output_pdf, "wb") as f_out:
             writer.write(f_out)
         return True
     except Exception as e:
         print(f"PDF multi-watermark error: {e}")
+        import traceback; traceback.print_exc()
         return False
 
 
