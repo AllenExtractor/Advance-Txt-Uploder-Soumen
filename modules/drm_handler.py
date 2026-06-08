@@ -940,7 +940,7 @@ def register_drm_handlers(bot):
         # Step 2: Check /download eligibility first
         if not _download_eligible.get(m.chat.id):
             _sorry_sticker = await m.reply_sticker("CAACAgUAAxkBAAFLwyBqJYKK7stQ9LTqI_TQvdzxJXJffAAChBsAAj0q0VSY-1UNDwi17jsE")
-            _sorry_msg = await m.reply_text("𝐒𝐨𝐫𝐫𝐲 𝐁𝐚𝐜𝐡𝐜𝐡𝐚 𝐢𝐦 𝐧𝐨𝐭 𝐅𝐫𝐞𝐞🥺.")
+            _sorry_msg = await m.reply_text("𝐏𝐚𝐝𝐡 𝐥𝐨 𝐘𝐚𝐚𝐫 𝐰𝐨 𝐤𝐚𝐚𝐦 𝐚𝐚𝐲𝐞𝐠𝐚😏.")
             await asyncio.sleep(2)
             try:
                 await _sorry_sticker.delete()
@@ -1087,8 +1087,8 @@ def register_drm_handlers(bot):
             b_name = raw_text0
 
         # Step 3 sticker — resolution
-        await _send_step_sticker("CAACAgUAAxkBAAFLw3pqJYcyhdCaDF9WRHkKO-XAvQAB8DIAAhAaAAIw1GBUriPKMWXwWUE7BA")
-        await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐫𝐞𝐬𝐨𝐥𝐮𝐭𝐢𝐨𝐧.\n 𝐄𝐠 : 𝟏𝟒𝟒, 𝟐𝟒𝟎, 𝟑𝟔𝟎, 𝟒𝟖𝟎, 𝟕𝟐𝟎 𝐨𝐫 𝟏𝟎𝟖𝟎😚.**")
+        await _send_step_sticker("CAACAgUAAxkBAAFL035qJoEqkKUCHUXobtxlYY91Y0WiEAAChg8AAv6cqVc2WKeTYejtVzsE")
+        await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐫𝐞𝐬𝐨𝐥𝐮𝐭𝐢𝐨𝐧.\n 𝐄𝐠 : 𝟏𝟒𝟒, 𝟐𝟒𝟎, 𝟑𝟔𝟎, 𝟒𝟖𝟎, 𝟕𝟐𝟎 𝐨𝐫 𝟏𝟎𝟖𝟎😁.**")
         try:
             input2: Message = await bot.listen(editable.chat.id, timeout=300)
             raw_text2 = input2.text
@@ -1116,7 +1116,7 @@ def register_drm_handlers(bot):
         quality = f"{raw_text2}p"
 
         # Step 4 sticker — PW Token
-        await _send_step_sticker("CAACAgQAAxkBAAFLw4FqJYemxVElqiQscDS2OSEkXp9s_QACJxcAAmGhaVAI30M7d2jcrDsE")
+        await _send_step_sticker("CAACAgUAAxkBAAFL04JqJoFxBNT-wf8Fbh7ItTbb30RQfAACuxMAAm0o0VQUPILUOWdMDTsE")
         await editable.edit("**🔹𝐄𝐧𝐭𝐞𝐫 𝐘𝐨𝐮𝐫 𝐏𝐖 𝐓𝐨𝐤𝐞𝐧 𝐅𝐨𝐫 𝐌𝐏𝐃 𝐔𝐑𝐋 𝐨𝐫 𝐬𝐞𝐧𝐝 /Vip 𝐭𝐨 𝐮𝐬𝐞 𝐘𝐨𝐮𝐫 𝐒𝐞𝐭 𝐓𝐨𝐤𝐞𝐧(𝐢𝐧 𝐒𝐞𝐭𝐭𝐢𝐧𝐠𝐬)😄.**")
         try:
             input_tok: Message = await bot.listen(editable.chat.id, timeout=300)
@@ -1146,7 +1146,7 @@ def register_drm_handlers(bot):
             CR = parse_credit(raw_text3)
 
         # Step 6 sticker — Thumb URL
-        await _send_step_sticker("CAACAgUAAxkBAAFLw45qJYgpmN9L66xcZY1nm-TsyYVCcwACZA8AAs6JKFd5oMJ8j6TLejsE")
+        await _send_step_sticker("CAACAgUAAxkBAAFL04tqJoGuPR2v5iIfvhqBfWWRuWfc5gACLwwAAjPkAVVHN4hOSkWeEjsE")
         await editable.edit("**🔹𝐍𝐨𝐰 𝐬𝐞𝐧𝐝 𝐭𝐡𝐞 𝐓𝐡𝐮𝐦𝐛 𝐔𝐑𝐋\n𝐄𝐠: 𝐌𝐮𝐬𝐭 𝐛𝐞 𝐄𝐧𝐝 𝐖𝐢𝐭𝐡 .𝐣𝐩𝐠\n\n𝐎𝐫 𝐒𝐞𝐧𝐝 `no`**")
         try:
             input6: Message = await bot.listen(editable.chat.id, timeout=200)
