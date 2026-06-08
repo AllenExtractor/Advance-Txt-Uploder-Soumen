@@ -284,25 +284,43 @@ def _pdf_page_is_image_based(page) -> bool:
     These pages need reverse-merge so watermark appears ON TOP of the image.
     """
     try:
+        # Try different API styles for pypdf vs PyPDF2
         resources = page.get("/Resources", {})
         if hasattr(resources, "get_object"):
             resources = resources.get_object()
-        xobjs = resources.get("/XObject", {})
+        elif callable(resources):
+            resources = resources()
+
+        xobjs = resources.get("/XObject", {}) if hasattr(resources, "get") else {}
+        if not xobjs:
+            return False
+
         if hasattr(xobjs, "get_object"):
             xobjs = xobjs.get_object()
+        elif callable(xobjs):
+            xobjs = xobjs()
+
         pw = float(page.mediabox.width)
         ph = float(page.mediabox.height)
+
         for key in xobjs:
-            obj = xobjs[key]
-            if hasattr(obj, "get_object"):
-                obj = obj.get_object()
-            if obj.get("/Subtype") == "/Image":
-                w = int(obj.get("/Width", 0))
-                h = int(obj.get("/Height", 0))
-                if w * h > pw * ph * 0.5:
-                    return True
-    except Exception:
-        pass
+            try:
+                obj = xobjs[key]
+                if hasattr(obj, "get_object"):
+                    obj = obj.get_object()
+                elif callable(obj):
+                    obj = obj()
+
+                subtype = obj.get("/Subtype", "") if hasattr(obj, "get") else ""
+                if subtype == "/Image":
+                    w = int(obj.get("/Width", 0)) if hasattr(obj, "get") else 0
+                    h = int(obj.get("/Height", 0)) if hasattr(obj, "get") else 0
+                    if w * h > pw * ph * 0.5:
+                        return True
+            except Exception:
+                continue
+    except Exception as e:
+        print(f"[PDF WM] Image detection fallback (safe): {e}")
     return False
 
 
@@ -314,62 +332,78 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
     Image PDFs (slides): white 85% opacity text.
     Text PDFs: black 30% opacity text.
     """
+    import io
     try:
-        import io
         from reportlab.pdfgen import canvas
         from reportlab.lib.colors import Color
+    except ImportError as ie:
+        print(f"[PDF WM] CRITICAL: reportlab not installed: {ie}")
+        return False
 
-        try:
-            from pypdf import PdfReader, PdfWriter
-        except ImportError:
-            from PyPDF2 import PdfReader, PdfWriter
+    try:
+        from pypdf import PdfReader, PdfWriter
+    except ImportError:
+        from PyPDF2 import PdfReader, PdfWriter
 
+    import shutil
+    writer = PdfWriter()
+    pages_watermarked = 0
+    total_pages = 0
+
+    try:
         reader = PdfReader(input_pdf)
-        writer = PdfWriter()
+        total_pages = len(reader.pages)
+        if total_pages == 0:
+            print("[PDF WM] Single: PDF has 0 pages, copying as-is")
+            shutil.copy2(input_pdf, output_pdf)
+            return True
+        print(f"[PDF WM] Single: Processing {total_pages} pages for watermark: '{watermark_text}'")
 
         for page in reader.pages:
-            page_width  = float(page.mediabox.width)
-            page_height = float(page.mediabox.height)
-            is_img      = _pdf_page_is_image_based(page)
-
-            font_size = max(10, int(page_width / 22))
-
-            # Image pages: white text (visible on dark/coloured slides)
-            # Text pages: dark text with low opacity
-            fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(0, 0, 0, alpha=0.30)
-
-            packet = io.BytesIO()
-            c = canvas.Canvas(packet, pagesize=(page_width, page_height))
-            c.setFillColor(fill_color)
-            c.setFont("Helvetica-Bold", font_size)
-            c.translate(page_width * 0.80, page_height * 0.85)
-            c.rotate(45)
-            c.drawCentredString(0, 0, watermark_text)
-            c.save()
-
-            packet.seek(0)
             try:
-                from pypdf import PdfReader as _PR
-            except ImportError:
-                from PyPDF2 import PdfReader as _PR
+                page_width  = float(page.mediabox.width)
+                page_height = float(page.mediabox.height)
+                is_img      = _pdf_page_is_image_based(page)
 
-            wm_reader = _PR(packet)
-            wm_page   = wm_reader.pages[0]
+                font_size = max(10, int(page_width / 22))
+                fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(0, 0, 0, alpha=0.30)
 
-            if is_img:
-                # Image-based page: merge original UNDER watermark → text appears on top of image
-                wm_page.merge_page(page)
-                writer.add_page(wm_page)
-            else:
-                # Text-based page: merge watermark under original content (standard)
-                page.merge_page(wm_page)
+                packet = io.BytesIO()
+                c = canvas.Canvas(packet, pagesize=(page_width, page_height))
+                c.setFillColor(fill_color)
+                c.setFont("Helvetica-Bold", font_size)
+                c.translate(page_width * 0.80, page_height * 0.85)
+                c.rotate(45)
+                c.drawCentredString(0, 0, watermark_text)
+                c.save()
+
+                packet.seek(0)
+                try:
+                    from pypdf import PdfReader as _PR
+                except ImportError:
+                    from PyPDF2 import PdfReader as _PR
+
+                wm_reader = _PR(packet)
+                wm_page   = wm_reader.pages[0]
+
+                if is_img:
+                    wm_page.merge_page(page)
+                    writer.add_page(wm_page)
+                else:
+                    page.merge_page(wm_page)
+                    writer.add_page(page)
+                pages_watermarked += 1
+            except Exception as page_err:
+                print(f"[PDF WM] Single: Page skipped: {page_err}")
                 writer.add_page(page)
+                continue
 
         with open(output_pdf, "wb") as f_out:
             writer.write(f_out)
-        return True
+        print(f"[PDF WM] Single: Done {pages_watermarked}/{total_pages} pages")
+        return pages_watermarked > 0
     except Exception as e:
-        print(f"PDF watermark error: {e}")
+        print(f"[PDF WM] Single error: {e}")
         import traceback; traceback.print_exc()
         return False
 
@@ -393,112 +427,140 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
     Skips any config where title == "/d".
     Returns True on success.
     """
+    import io
     try:
-        import io
         from reportlab.pdfgen import canvas
         from reportlab.lib.colors import Color
+    except ImportError as ie:
+        print(f"[PDF WM] CRITICAL: reportlab not installed: {ie}")
+        return False
 
-        try:
-            from pypdf import PdfReader, PdfWriter
-        except ImportError:
-            from PyPDF2 import PdfReader, PdfWriter
+    try:
+        from pypdf import PdfReader, PdfWriter
+    except ImportError:
+        from PyPDF2 import PdfReader, PdfWriter
 
-        # Filter out disabled configs
-        active = [cfg for cfg in wm_configs if cfg.get("title", "/d") != "/d"]
-        if not active:
-            import shutil
+    import shutil
+
+    # Filter out disabled configs
+    active = [cfg for cfg in wm_configs if cfg.get("title", "/d") != "/d"]
+    if not active:
+        shutil.copy2(input_pdf, output_pdf)
+        return True
+
+    writer = PdfWriter()
+    pages_watermarked = 0
+    total_pages = 0
+
+    try:
+        reader = PdfReader(input_pdf)
+        total_pages = len(reader.pages)
+        if total_pages == 0:
+            print("[PDF WM] Multi: PDF has 0 pages, copying as-is")
             shutil.copy2(input_pdf, output_pdf)
             return True
 
-        reader = PdfReader(input_pdf)
-        writer = PdfWriter()
+        print(f"[PDF WM] Multi: Processing {total_pages} pages with {len(active)} watermark locations")
+        for cfg in active:
+            print(f"[PDF WM] Multi:   -> '{cfg['title']}' at ({cfg.get('x_frac','?')}, {cfg.get('y_frac','?')})")
 
         for page in reader.pages:
-            page_width  = float(page.mediabox.width)
-            page_height = float(page.mediabox.height)
-            is_img      = _pdf_page_is_image_based(page)
-
-            # Build a single canvas with ALL watermarks drawn at once
-            packet = io.BytesIO()
-            c = canvas.Canvas(packet, pagesize=(page_width, page_height))
-
-            for cfg in active:
-                title    = cfg["title"]
-                url      = cfg.get("url", "/d")
-                x_frac   = cfg.get("x_frac", 0.80)
-                y_frac   = cfg.get("y_frac", 0.85)
-                opacity  = cfg.get("opacity", 0.30)
-                rotation = cfg.get("rotation", 0.0)
-                anchor   = cfg.get("anchor", "center")
-
-                font_size = max(8, int(page_width / 28))
-                x_pos = page_width  * x_frac
-                y_pos = page_height * y_frac
-
-                # Image pages: use white text + boost opacity for visibility
-                # Text pages: use black text with configured opacity
-                if is_img:
-                    fill_color = Color(1, 1, 1, alpha=min(1.0, opacity + 0.55))
-                else:
-                    fill_color = Color(0, 0, 0, alpha=opacity)
-
-                c.saveState()
-                c.setFillColor(fill_color)
-                c.setFont("Helvetica-Bold", font_size)
-                c.translate(x_pos, y_pos)
-                if rotation:
-                    c.rotate(rotation)
-
-                if anchor == "left":
-                    c.drawString(0, 0, title)
-                elif anchor == "right":
-                    c.drawRightString(0, 0, title)
-                else:
-                    c.drawCentredString(0, 0, title)
-
-                # URL link annotation using absolute page coordinates
-                if url and url != "/d":
-                    try:
-                        text_width = c.stringWidth(title, "Helvetica-Bold", font_size)
-                        if anchor == "center":
-                            abs_lx = x_pos - text_width / 2
-                        elif anchor == "right":
-                            abs_lx = x_pos - text_width
-                        else:
-                            abs_lx = x_pos
-                        abs_ly = y_pos - font_size * 0.3
-                        # Use absolute coords (relative=0) to avoid transform issues
-                        c.linkURL(url, (abs_lx, abs_ly, abs_lx + text_width, abs_ly + font_size * 1.2), relative=0)
-                    except Exception as link_err:
-                        print(f"PDF WM link error: {link_err}")
-
-                c.restoreState()
-
-            c.save()
-            packet.seek(0)
-
             try:
-                from pypdf import PdfReader as _PR
-            except ImportError:
-                from PyPDF2 import PdfReader as _PR
+                page_width  = float(page.mediabox.width)
+                page_height = float(page.mediabox.height)
+                is_img      = _pdf_page_is_image_based(page)
 
-            wm_reader = _PR(packet)
-            wm_page   = wm_reader.pages[0]
+                # Build a single canvas with ALL watermarks drawn at once
+                packet = io.BytesIO()
+                c = canvas.Canvas(packet, pagesize=(page_width, page_height))
 
-            if is_img:
-                # Image-based: merge original UNDER watermark → watermark on top
-                wm_page.merge_page(page)
-                writer.add_page(wm_page)
-            else:
-                # Text-based: merge watermark under original content (standard)
-                page.merge_page(wm_page)
+                for cfg in active:
+                    try:
+                        title    = cfg["title"]
+                        url      = cfg.get("url", "/d")
+                        x_frac   = cfg.get("x_frac", 0.80)
+                        y_frac   = cfg.get("y_frac", 0.85)
+                        opacity  = cfg.get("opacity", 0.30)
+                        rotation = cfg.get("rotation", 0.0)
+                        anchor   = cfg.get("anchor", "center")
+
+                        font_size = max(8, int(page_width / 28))
+                        x_pos = page_width  * x_frac
+                        y_pos = page_height * y_frac
+
+                        # Image pages: white text + boost opacity
+                        # Text pages: black text with configured opacity
+                        if is_img:
+                            fill_color = Color(1, 1, 1, alpha=min(1.0, opacity + 0.55))
+                        else:
+                            fill_color = Color(0, 0, 0, alpha=opacity)
+
+                        c.saveState()
+                        c.setFillColor(fill_color)
+                        c.setFont("Helvetica-Bold", font_size)
+                        c.translate(x_pos, y_pos)
+                        if rotation:
+                            c.rotate(rotation)
+
+                        if anchor == "left":
+                            c.drawString(0, 0, title)
+                        elif anchor == "right":
+                            c.drawRightString(0, 0, title)
+                        else:
+                            c.drawCentredString(0, 0, title)
+
+                        # URL link annotation (optional, wrapped in try)
+                        if url and url != "/d":
+                            try:
+                                text_width = c.stringWidth(title, "Helvetica-Bold", font_size)
+                                if anchor == "center":
+                                    abs_lx = x_pos - text_width / 2
+                                elif anchor == "right":
+                                    abs_lx = x_pos - text_width
+                                else:
+                                    abs_lx = x_pos
+                                abs_ly = y_pos - font_size * 0.3
+                                c.linkURL(url, (abs_lx, abs_ly, abs_lx + text_width, abs_ly + font_size * 1.2), relative=0)
+                            except Exception as link_err:
+                                print(f"[PDF WM] Multi: Link skipped for '{title}': {link_err}")
+
+                        c.restoreState()
+                    except Exception as cfg_err:
+                        print(f"[PDF WM] Multi: Config error for '{cfg.get('title','?')}': {cfg_err}")
+                        continue
+
+                c.save()
+                packet.seek(0)
+
+                try:
+                    from pypdf import PdfReader as _PR
+                except ImportError:
+                    from PyPDF2 import PdfReader as _PR
+
+                wm_reader = _PR(packet)
+                wm_page   = wm_reader.pages[0]
+
+                if is_img:
+                    wm_page.merge_page(page)
+                    writer.add_page(wm_page)
+                else:
+                    page.merge_page(wm_page)
+                    writer.add_page(page)
+                pages_watermarked += 1
+
+            except Exception as page_err:
+                print(f"[PDF WM] Multi: Page skipped: {page_err}")
                 writer.add_page(page)
+                continue
 
         with open(output_pdf, "wb") as f_out:
             writer.write(f_out)
-        return True
+
+        print(f"[PDF WM] Multi: Done {pages_watermarked}/{total_pages} pages -> {output_pdf}")
+        return pages_watermarked > 0
+
     except Exception as e:
-        print(f"PDF multi-watermark error: {e}")
+        print(f"[PDF WM] Multi error: {e}")
         import traceback; traceback.print_exc()
         return False
 
@@ -594,36 +656,54 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
     # ── Build multi-location watermark configs from globals ───────────────────
     _wm_configs = []
 
+    # Helper: safely read a global PDF watermark location
+    def _get_wm(loc_key, defaults):
+        try:
+            val = getattr(_globals_mod, loc_key, {"title": "/d", "url": "/d"})
+            # Handle case where value might be a plain string (backward compat)
+            if isinstance(val, str) and val != "/d":
+                return {"title": val, "url": "/d"}
+            return val if isinstance(val, dict) else {"title": "/d", "url": "/d"}
+        except Exception:
+            return {"title": "/d", "url": "/d"}
+
     # Upper Right: 30% opacity, 45° rotation
-    ur = getattr(_globals_mod, "pdf_wm_upper_right", {"title": "/d", "url": "/d"})
+    ur = _get_wm("pdf_wm_upper_right", {})
     if ur.get("title", "/d") != "/d":
         _wm_configs.append({"title": ur["title"], "url": ur.get("url", "/d"),
                              "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
                              "rotation": 45.0, "anchor": "center"})
     # Upper Left: 30% opacity, 0° rotation
-    ul = getattr(_globals_mod, "pdf_wm_upper_left", {"title": "/d", "url": "/d"})
+    ul = _get_wm("pdf_wm_upper_left", {})
     if ul.get("title", "/d") != "/d":
         _wm_configs.append({"title": ul["title"], "url": ul.get("url", "/d"),
                              "x_frac": 0.15, "y_frac": 0.85, "opacity": 0.30,
                              "rotation": 0.0, "anchor": "left"})
     # Down Right: 90% opacity, 0° rotation
-    dr = getattr(_globals_mod, "pdf_wm_down_right", {"title": "/d", "url": "/d"})
+    dr = _get_wm("pdf_wm_down_right", {})
     if dr.get("title", "/d") != "/d":
         _wm_configs.append({"title": dr["title"], "url": dr.get("url", "/d"),
                              "x_frac": 0.80, "y_frac": 0.06, "opacity": 0.90,
                              "rotation": 0.0, "anchor": "right"})
     # Down Left: 30% opacity, 0° rotation
-    dl = getattr(_globals_mod, "pdf_wm_down_left", {"title": "/d", "url": "/d"})
+    dl = _get_wm("pdf_wm_down_left", {})
     if dl.get("title", "/d") != "/d":
         _wm_configs.append({"title": dl["title"], "url": dl.get("url", "/d"),
                              "x_frac": 0.15, "y_frac": 0.06, "opacity": 0.30,
                              "rotation": 0.0, "anchor": "left"})
     # Down Middle: 95% opacity, 0° rotation
-    dm = getattr(_globals_mod, "pdf_wm_down_middle", {"title": "/d", "url": "/d"})
+    dm = _get_wm("pdf_wm_down_middle", {})
     if dm.get("title", "/d") != "/d":
         _wm_configs.append({"title": dm["title"], "url": dm.get("url", "/d"),
                              "x_frac": 0.50, "y_frac": 0.04, "opacity": 0.95,
                              "rotation": 0.0, "anchor": "center"})
+
+    # If no multi-location set but old pdfwatermark param is set, use it as Upper Right fallback
+    if not _wm_configs and pdfwatermark and pdfwatermark != "/d":
+        _wm_configs.append({"title": pdfwatermark, "url": "/d",
+                             "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
+                             "rotation": 45.0, "anchor": "center"})
+        print(f"[PDF WM] Using legacy pdfwatermark as Upper Right: '{pdfwatermark}'")
 
     print(f"[PDF WM] Active watermark configs: {len(_wm_configs)}")
 
@@ -639,30 +719,47 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
             if _mwm_success and os.path.exists(_mwm_output):
                 final_pdf = _mwm_output
                 watermarked = True
-                print(f"[PDF WM] Multi-watermark applied successfully: {_mwm_output}")
+                print(f"[PDF WM] Multi-watermark applied OK: {_mwm_output}")
             else:
-                print(f"[PDF WM] Multi-watermark failed, using original")
+                print(f"[PDF WM] Multi-watermark returned False, trying single fallback")
+                # Fallback: try single watermark with first config's title
+                _fb_title = _wm_configs[0]["title"]
+                _fb_output = f"@MR_Toxic_1_{safe_name}_wm_fb.pdf"
+                _fb_success = await apply_pdf_watermark(ka, _fb_output, _fb_title)
+                if _fb_success and os.path.exists(_fb_output):
+                    final_pdf = _fb_output
+                    watermarked = True
+                    print(f"[PDF WM] Single fallback OK: {_fb_output}")
+                else:
+                    final_pdf = ka
+        except asyncio.TimeoutError:
+            print("[PDF WM] Multi-watermark timed out, trying single fallback")
+            try:
+                _fb_title = _wm_configs[0]["title"]
+                _fb_output = f"@MR_Toxic_1_{safe_name}_wm_fb.pdf"
+                _fb_success = await asyncio.wait_for(
+                    apply_pdf_watermark(ka, _fb_output, _fb_title), timeout=120
+                )
+                if _fb_success and os.path.exists(_fb_output):
+                    final_pdf = _fb_output
+                    watermarked = True
+                else:
+                    final_pdf = ka
+            except Exception:
                 final_pdf = ka
-        except asyncio.TimeoutError:
-            print("[PDF WM] Multi-watermark timed out, using original")
-            final_pdf = ka
         except Exception as _mwm_err:
-            print(f"[PDF WM] Multi-watermark error: {_mwm_err}")
-            final_pdf = ka
-    elif pdfwatermark and pdfwatermark != "/d":
-        # Legacy single watermark fallback (old pdfwatermark global)
-        wm_output = f"@MR_Toxic_1_{safe_name}_wm.pdf"
-        try:
-            success = await asyncio.wait_for(
-                apply_pdf_watermark(ka, wm_output, pdfwatermark),
-                timeout=120
-            )
-        except asyncio.TimeoutError:
-            success = False
-            print("[PDF WM] Single watermark timed out")
-        if success and os.path.exists(wm_output):
-            final_pdf = wm_output
-            watermarked = True
+            print(f"[PDF WM] Multi-watermark error: {_mwm_err}, trying single fallback")
+            try:
+                _fb_title = _wm_configs[0]["title"]
+                _fb_output = f"@MR_Toxic_1_{safe_name}_wm_fb.pdf"
+                _fb_success = await apply_pdf_watermark(ka, _fb_output, _fb_title)
+                if _fb_success and os.path.exists(_fb_output):
+                    final_pdf = _fb_output
+                    watermarked = True
+                else:
+                    final_pdf = ka
+            except Exception:
+                final_pdf = ka
     else:
         # No watermark — rename with prefix
         named_pdf = f"@MR_Toxic_1_{safe_name}.pdf"

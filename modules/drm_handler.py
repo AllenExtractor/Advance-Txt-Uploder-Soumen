@@ -435,7 +435,7 @@ async def drm_handler(bot: Client, m: Message):
             # Direct link: no thumb/watermark from settings
             thumb = '/d'
             vidwatermark = '/d'
-            pdfwatermark = '/d'
+            pdfwatermark = globals.pdfwatermark  # respect PDF watermark settings
             await editable.delete()
         
     # Pass thumb URL directly — send_vid handles download with 25s timeout & fallback
