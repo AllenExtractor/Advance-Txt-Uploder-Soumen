@@ -279,19 +279,26 @@ async def download_video(url, cmd, name):
 
 def _pdf_page_is_image_based(page) -> bool:
     """
-    Detect if a PDF page is image-based (e.g. screenshot/slide PDFs).
-    Returns True if a full-page image covers >50% of the page area.
-    These pages need reverse-merge so watermark appears ON TOP of the image.
+    Detect if a PDF page is image-based (screenshot/slide/PPT PDFs).
+    Returns True if:
+      - A single full-page image covers >40% of page area, OR
+      - Multiple images combined cover >60% of page area, OR
+      - Page has NO extractable text (pure image / scanned / slide)
+    These pages need reverse-merge so watermark appears ON TOP.
     """
     try:
+        pw = float(page.mediabox.width)
+        ph = float(page.mediabox.height)
+        page_area = pw * ph
+
         resources = page.get("/Resources", {})
         if hasattr(resources, "get_object"):
             resources = resources.get_object()
         xobjs = resources.get("/XObject", {})
         if hasattr(xobjs, "get_object"):
             xobjs = xobjs.get_object()
-        pw = float(page.mediabox.width)
-        ph = float(page.mediabox.height)
+
+        total_img_area = 0
         for key in xobjs:
             obj = xobjs[key]
             if hasattr(obj, "get_object"):
@@ -299,8 +306,28 @@ def _pdf_page_is_image_based(page) -> bool:
             if obj.get("/Subtype") == "/Image":
                 w = int(obj.get("/Width", 0))
                 h = int(obj.get("/Height", 0))
-                if w * h > pw * ph * 0.5:
+                img_area = w * h
+                # Single large image covering >40% → definitely image-based
+                if img_area > page_area * 0.40:
                     return True
+                total_img_area += img_area
+
+        # Multiple images combined covering >60% → slide/PPT style
+        if total_img_area > page_area * 0.60:
+            return True
+
+        # No images found via XObject check — try text extraction
+        # PPT-exported PDFs often have vector graphics but no text
+        try:
+            extracted = page.extract_text() or ""
+            # If page has very little text (< 20 chars) it's likely a visual/slide page
+            if len(extracted.strip()) < 20:
+                # Only treat as image-based if there ARE some XObjects (graphics/images)
+                if len(list(xobjs.keys())) > 0:
+                    return True
+        except Exception:
+            pass
+
     except Exception:
         pass
     return False
@@ -334,9 +361,9 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
 
             font_size = max(10, int(page_width / 22))
 
-            # Image pages: white text (visible on dark/coloured slides)
+            # Image/slide pages: red-pink text (visible on both dark & light PPT backgrounds)
             # Text pages: dark text with low opacity
-            fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(1, 0, 0, alpha=0.30)
+            fill_color = Color(0.85, 0.1, 0.2, alpha=0.80) if is_img else Color(0, 0, 0, alpha=0.30)
 
             packet = io.BytesIO()
             c = canvas.Canvas(packet, pagesize=(page_width, page_height))
@@ -433,15 +460,19 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 anchor   = cfg.get("anchor", "center")
 
                 font_size = max(8, int(page_width / 28))
+                # Boost font size for slide/image pages — text PDFs are smaller
+                if is_img:
+                    font_size = max(10, int(page_width / 20))
                 x_pos = page_width  * x_frac
                 y_pos = page_height * y_frac
 
-                # Image pages: use white text + boost opacity for visibility
-                # Text pages: use black text with configured opacity
+                # Image/slide pages: red-pink text (visible on both dark & light PPT backgrounds)
+                # Text pages: black text with configured opacity
                 if is_img:
-                    fill_color = Color(1, 1, 1, alpha=min(1.0, opacity + 0.55))
+                    boosted_opacity = min(1.0, opacity + 0.45)
+                    fill_color = Color(0.85, 0.1, 0.2, alpha=boosted_opacity)  # deep red-pink
                 else:
-                    fill_color = Color(1, 0, 0, alpha=opacity)
+                    fill_color = Color(0, 0, 0, alpha=opacity)
 
                 c.saveState()
                 c.setFillColor(fill_color)
