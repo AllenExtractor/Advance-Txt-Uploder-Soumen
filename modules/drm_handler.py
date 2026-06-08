@@ -432,10 +432,12 @@ async def drm_handler(bot: Client, m: Message):
             raw_text7 = '/Baby'
             channel_id = m.chat.id
             path = os.path.join("downloads", "Free Batch")
-            # Direct link: no thumb/watermark from settings
+            # Direct link: thumb & vidwatermark default to /d
+            # pdfwatermark & pdfthumb: use globals so Settings watermark works
             thumb = '/d'
             vidwatermark = '/d'
-            pdfwatermark = globals.pdfwatermark  # respect PDF watermark settings
+            pdfwatermark = globals.pdfwatermark
+            pdfthumb = globals.pdfthumb
             await editable.delete()
         
     # Pass thumb URL directly — send_vid handles download with 25s timeout & fallback
