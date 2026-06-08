@@ -336,7 +336,7 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
 
             # Image pages: white text (visible on dark/coloured slides)
             # Text pages: dark text with low opacity
-            fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(0, 0, 0, alpha=0.30)
+            fill_color = Color(1, 1, 1, alpha=0.85) if is_img else Color(1, 0, 0, alpha=0.30)
 
             packet = io.BytesIO()
             c = canvas.Canvas(packet, pagesize=(page_width, page_height))
@@ -441,7 +441,7 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 if is_img:
                     fill_color = Color(1, 1, 1, alpha=min(1.0, opacity + 0.55))
                 else:
-                    fill_color = Color(0, 0, 0, alpha=opacity)
+                    fill_color = Color(1, 0, 0, alpha=opacity)
 
                 c.saveState()
                 c.setFillColor(fill_color)
