@@ -22,7 +22,7 @@ topic = '/d'
 # ── Multi-location PDF watermark settings ────────────────────────────────────
 # Each location stores {"title": str|"/d", "url": str|"/d"}
 # Default: all disabled (/d)
-pdf_wm_upper_right = {"title": "/d", "url": "/d"}   # 30% opacity, 45° rotation (original)
+pdf_wm_upper_right = {"title": "TEST WATERMARK", "url": "https://t.me/Toxic_Official_1"}   # 30% opacity, 45° rotation (original)
 pdf_wm_upper_left  = {"title": "/d", "url": "/d"}   # 30% opacity, 0° rotation
 pdf_wm_down_right  = {"title": "/d", "url": "/d"}   # 90% opacity, 0° rotation
 pdf_wm_down_left   = {"title": "/d", "url": "/d"}   # 30% opacity, 0° rotation
