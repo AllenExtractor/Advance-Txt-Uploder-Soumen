@@ -359,11 +359,11 @@ async def apply_pdf_watermark(input_pdf, output_pdf, watermark_text):
             page_height = float(page.mediabox.height)
             is_img      = _pdf_page_is_image_based(page)
 
-            font_size = max(10, int(page_width / 22))
+            font_size = max(10, int(page_width / 28))
 
             # Image/slide pages: red-pink text (visible on both dark & light PPT backgrounds)
             # Text pages: dark text with low opacity
-            fill_color = Color(0.85, 0.1, 0.2, alpha=0.80) if is_img else Color(0, 0, 0, alpha=0.30)
+            fill_color = Color(0,0,1, alpha=0.80) if is_img else Color(0, 0, 1, alpha=0.30)
 
             packet = io.BytesIO()
             c = canvas.Canvas(packet, pagesize=(page_width, page_height))
@@ -462,7 +462,7 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 font_size = max(8, int(page_width / 28))
                 # Boost font size for slide/image pages — text PDFs are smaller
                 if is_img:
-                    font_size = max(10, int(page_width / 20))
+                    font_size = max(10, int(page_width / 28))
                 x_pos = page_width  * x_frac
                 y_pos = page_height * y_frac
 
@@ -470,9 +470,9 @@ async def apply_pdf_watermark_multi(input_pdf, output_pdf, wm_configs):
                 # Text pages: black text with configured opacity
                 if is_img:
                     boosted_opacity = min(1.0, opacity + 0.45)
-                    fill_color = Color(0.85, 0.1, 0.2, alpha=boosted_opacity)  # deep red-pink
+                    fill_color = Color(0, 0, 1, alpha=boosted_opacity)  # deep blue
                 else:
-                    fill_color = Color(0, 0, 0, alpha=opacity)
+                    fill_color = Color(0, 0, 1, alpha=opacity)
 
                 c.saveState()
                 c.setFillColor(fill_color)
@@ -628,35 +628,35 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
     _wm_configs = []
     print(f"[PDF WM] globals check → upper_right={_globals_mod.pdf_wm_upper_right}, down_middle={_globals_mod.pdf_wm_down_middle}")
 
-    # Upper Right: 30% opacity, 45° rotation
+    # Upper Right: 25% opacity, 45° rotation
     ur = getattr(_globals_mod, "pdf_wm_upper_right", {"title": "/d", "url": "/d"})
     if ur.get("title", "/d") != "/d":
         _wm_configs.append({"title": ur["title"], "url": ur.get("url", "/d"),
-                             "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.30,
+                             "x_frac": 0.80, "y_frac": 0.85, "opacity": 0.25,
                              "rotation": 45.0, "anchor": "center"})
-    # Upper Left: 30% opacity, 0° rotation
+    # Upper Left: 25% opacity, 45° rotation
     ul = getattr(_globals_mod, "pdf_wm_upper_left", {"title": "/d", "url": "/d"})
     if ul.get("title", "/d") != "/d":
         _wm_configs.append({"title": ul["title"], "url": ul.get("url", "/d"),
-                             "x_frac": 0.15, "y_frac": 0.85, "opacity": 0.30,
-                             "rotation": 0.0, "anchor": "left"})
+                             "x_frac": 0.10, "y_frac": 0.85, "opacity": 0.25,
+                             "rotation": 45.0, "anchor": "left"})
     # Down Right: 90% opacity, 0° rotation
     dr = getattr(_globals_mod, "pdf_wm_down_right", {"title": "/d", "url": "/d"})
     if dr.get("title", "/d") != "/d":
         _wm_configs.append({"title": dr["title"], "url": dr.get("url", "/d"),
-                             "x_frac": 0.80, "y_frac": 0.06, "opacity": 0.90,
+                             "x_frac": 0.96, "y_frac": 0.015, "opacity": 0.90,
                              "rotation": 0.0, "anchor": "right"})
-    # Down Left: 30% opacity, 0° rotation
+    # Down Left: 85% opacity, 0° rotation
     dl = getattr(_globals_mod, "pdf_wm_down_left", {"title": "/d", "url": "/d"})
     if dl.get("title", "/d") != "/d":
         _wm_configs.append({"title": dl["title"], "url": dl.get("url", "/d"),
-                             "x_frac": 0.15, "y_frac": 0.06, "opacity": 0.30,
+                             "x_frac": 0.06, "y_frac": 0.06, "opacity": 0.85,
                              "rotation": 0.0, "anchor": "left"})
-    # Down Middle: 95% opacity, 0° rotation
+    # Down Middle: 90% opacity, 0° rotation
     dm = getattr(_globals_mod, "pdf_wm_down_middle", {"title": "/d", "url": "/d"})
     if dm.get("title", "/d") != "/d":
         _wm_configs.append({"title": dm["title"], "url": dm.get("url", "/d"),
-                             "x_frac": 0.50, "y_frac": 0.04, "opacity": 0.95,
+                             "x_frac": 0.50, "y_frac": 0.013, "opacity": 0.90,
                              "rotation": 0.0, "anchor": "center"})
 
     print(f"[PDF WM] Active watermark configs: {len(_wm_configs)}")
@@ -664,7 +664,7 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
     # ── Apply watermarks (multi-location if any configs set, else simple rename) ──
     if _wm_configs:
         # Apply all locations in one pass
-        _mwm_output = f"@MR_Toxic_1_{safe_name}_mwm.pdf"
+        _mwm_output = f"@MR_Toxic_1_{safe_name}.pdf"
         print(f"===== CALLING PDF WATERMARK ===== configs={len(_wm_configs)} → {_mwm_output}")
         try:
             _mwm_success = await asyncio.wait_for(
@@ -686,7 +686,7 @@ async def send_doc(bot: Client, m: Message, cc, ka, cc1, prog, count, name, chan
             final_pdf = ka
     elif pdfwatermark and pdfwatermark != "/d":
         # Legacy single watermark fallback (old pdfwatermark global)
-        wm_output = f"@MR_Toxic_1_{safe_name}_wm.pdf"
+        wm_output = f"@MR_Toxic_1_{safe_name}.pdf"
         try:
             success = await asyncio.wait_for(
                 apply_pdf_watermark(ka, wm_output, pdfwatermark),
