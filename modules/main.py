@@ -78,12 +78,26 @@ async def start(bot, m: Message):
         "CAACAgQAAxkBAAFLwwABaiWAv8N8krwglxUaqaZAqVHFBIQAAv4ZAAJxARlQagc8NAy31zc7BA",
         "CAACAgQAAxkBAAFLwwRqJYDvJ-13xb2Un4RXhLGwSIaSzwACthMAAk6TsVJWVlvl5KoXAjsE",
         "CAACAgQAAxkBAAFLwwhqJYEmGcRB22SDL1DzL9blbqPAyQACfxMAAmERCVDdA1gaEWW1kTsE",
+        "CAACAgUAAxkBAAFL05lqJoLZ-QerDkqU2nNl8sQpnEyOuAACixAAAsX32VRZyV5Pre9nNzsE",
+        "CAACAgUAAxkBAAFL06FqJoL8PmQovETo4roJGJqHp2tPQQAC_hUAAlNMYVWcrcTIq12jpDsE",
+        "CAACAgIAAxkBAAFL06lqJoMQfJyWwCGyNeWXlKRucSYlKgACdzIAArwF0EgMDONyCH8JTjsE",
+        "CAACAgQAAxkBAAFL06tqJoMjdaCrqJfmyWL2QtdiXD2y1AACrSEAAhBb4VCgAphtKkZfRDsE",
+        "CAACAgUAAxkBAAFL069qJoM_HXC5M809uNst3VQ4_YeHKgACThMAAljGUFZRGBj2BWiaTTsE",
+        "CAACAgUAAxkBAAFL07pqJoNjyTljx_e4XhCgAAGR3LvnzbAAAk4SAAJx4NhXLiw7mX0hn9E7BA",
+        "CAACAgUAAxkBAAFL08NqJoOIlsozCZESe3Zde7Ie-5AicwACnAcAAoh_4VaxIDI2w_8W9DsE",
+        "CAACAgUAAxkBAAFL08tqJoOpFL8c1JqvStiFDi6eOkjIhAACxBIAAniFEFYlHX1uOsR-5DsE",
+        
     ]
     _funny_messages = [
         "🙈 Oho... aakhir mil hi gayi apne baby se fursat?\nChalo koi baat nahi, ab thoda time mujhe bhi de do. 😏",
         "👀 Welcome yaar...\nItni der laga di, kya /start button dhundhne Japan gaye the? 😂",
         "🙈Oho... yaad aa hi gayi meri?\nMain to samjha tha tum physics ki tarah mujhe bhi bhul hi gaye. 😏",
         "😏 Oye! Finally aa hi gaye... Main to soch raha thi tum mujhe ignore kar rahe ho🥺.",
+        "My life feels like a test and I forgot to study for. 😭",
+        "👀 Arre wah, aaj to darshan ho gaye... lagta hai free Wi-Fi mil gaya kahin. 🤣",
+        "😌 Welcome back janab, itni late entry to filmo ke hero bhi nahi marte. 😏",
+        "👀 Dekho kaun aaya hai... lagta hai aaj duniya ke saare kaam khatam ho gaye. 😏",
+    
     ]
     _idx = random.randint(0, 3)
     _sticker_msg = await bot.send_sticker(chat_id=m.chat.id, sticker=_funny_stickers[_idx])
