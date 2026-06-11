@@ -210,20 +210,31 @@ async def drm_handler(bot: Client, m: Message):
     other_count = 0
     
     links = []
-    for i in lines:
-        if "://" not in i:
+    all_entries = []  # ── NEW: preserves original line order; no line is ever silently skipped ──
+    for raw_line in lines:
+        raw_line = raw_line.strip()
+        if not raw_line:
+            all_entries.append(("skip", "(blank/empty line)"))
+            continue
+        if "://" not in raw_line:
+            all_entries.append(("skip", raw_line))
             continue
 
         # ── Advanced title:URL parser (Hindi/English, all separators, all URL types) ──
-        title_part, url_body = parse_title_url(i)
+        title_part, url_body = parse_title_url(raw_line)
         if title_part is None or url_body is None:
+            all_entries.append(("skip", raw_line))
             continue
 
-        links.append([title_part, url_body])
+        entry = [title_part, url_body]
+        links.append(entry)
+        entry_idx = len(links) - 1
         # ── Skip .jpg/.jpeg/.png thumbnail URLs — not downloadable content ──
         if url_body.endswith((".jpg", ".jpeg", ".png")):
             links.pop()  # remove the just-added link
+            all_entries.append(("skip", raw_line))  # thumbnail URLs get a failed notice too
             continue
+        all_entries.append(("url", entry_idx))
         if ".pdf" in url_body:
             pdf_count += 1
         elif "v2" in url_body:
@@ -240,22 +251,32 @@ async def drm_handler(bot: Client, m: Message):
             zip_count += 1
         else:
             other_count += 1
-                
-    if not links:
+
+    total_lines = len(all_entries)
+    if total_lines == 0:
         await m.reply_text("<b>🔹𝐈 𝐋𝐎𝐕𝐄 𝐘𝐎𝐔💕😘.</b>")
         return
+    if not links:
+        # All lines were skipped — send notices for every line then return
+        count = 1
+        for entry_type, entry_data in all_entries:
+            await send_failed_notice(bot, channel_id, count, entry_data[:60] if entry_data else "(blank line)", "(no valid URL)", "Line does not contain a valid downloadable URL")
+            count += 1
+        await m.reply_text(f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐔𝐑𝐋𝐬 URLs: {total_lines} \n┠🔴 𝐓𝐨𝐭𝐚𝐥 𝐅𝐚𝐢𝐥𝐞𝐝 𝐔𝐑𝐋𝐬: {total_lines}\n┠🟢 𝐓𝐨𝐭𝐚𝐥 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥 𝐔𝐑𝐋𝐬: 0</blockquote>\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**\n")
+        return
 
+    skipped_count = total_lines - len(links)
     if m.document:
-        editable = await m.reply_text(f"**(1).🖤 𝐓𝐨𝐭𝐚𝐥 🔗 𝐥𝐢𝐧𝐤𝐬 𝐟𝐨𝐮𝐧𝐝 𝐚𝐫𝐞 {len(links)}\n<blockquote>•𝐏𝐃𝐅 : {pdf_count}      •𝐕𝟐 : {v2_count}\n•𝐈𝐌𝐆 : {img_count}      •𝐘𝐓 : {yt_count}\n•𝐙𝐈𝐏 : {zip_count}       •𝐌𝟑𝐔𝟖 : {m3u8_count}\n•𝐃𝐑𝐌 : {drm_count}      •𝐎𝐭𝐡𝐞𝐫 : {other_count}\n•𝐌𝐏𝐃 : {mpd_count}</blockquote>\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🦍.\n\n𝐘𝐨𝐮 𝐀𝐫𝐞 𝐎𝐧 𝐒𝐭𝐞𝐩: 𝟏/𝟕⚫**")
+        editable = await m.reply_text(f"**(1).🖤 𝐓𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐞𝐬: {total_lines}  (𝐯𝐚𝐥𝐢𝐝 𝐥𝐢𝐧𝐤𝐬: {len(links)}, 𝐬𝐤𝐢𝐩𝐩𝐞𝐝: {skipped_count})\n<blockquote>•𝐏𝐃𝐅 : {pdf_count}      •𝐕𝟐 : {v2_count}\n•𝐈𝐌𝐆 : {img_count}      •𝐘𝐓 : {yt_count}\n•𝐙𝐈𝐏 : {zip_count}       •𝐌𝟑𝐔𝟖 : {m3u8_count}\n•𝐃𝐑𝐌 : {drm_count}      •𝐎𝐭𝐡𝐞𝐫 : {other_count}\n•𝐌𝐏𝐃 : {mpd_count}</blockquote>\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🦍.\n\n𝐘𝐨𝐮 𝐀𝐫𝐞 𝐎𝐧 𝐒𝐭𝐞𝐩: 𝟏/𝟕⚫**")
         try:
             input0: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text = input0.text
             await input0.delete(True)
         except asyncio.TimeoutError:
             raw_text = '1'
-    
-        if int(raw_text) > len(links) :
-            await editable.edit(f"🔹**𝐄𝐧𝐭𝐞𝐫 𝐧𝐮𝐦𝐛𝐞𝐫 𝐢𝐧 𝐫𝐚𝐧𝐠𝐞 𝐨𝐟 𝐲𝐨𝐮𝐫 𝐭𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐤𝐬 (01-{len(links)})**")
+
+        if int(raw_text) > total_lines:
+            await editable.edit(f"🔹**𝐄𝐧𝐭𝐞𝐫 𝐧𝐮𝐦𝐛𝐞𝐫 𝐢𝐧 𝐫𝐚𝐧𝐠𝐞 𝐨𝐟 𝐲𝐨𝐮𝐫 𝐭𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐞𝐬 (01-{total_lines})**")
             processing_request = False  # Reset the processing flag
             await m.reply_text("🔹**Processing Canclled......  **")
             return
@@ -461,10 +482,18 @@ async def drm_handler(bot: Client, m: Message):
 
 #........................................................................................................................................................................................
     failed_count = 0
-    count =int(raw_text)    
+    count = int(raw_text)
     arg = int(raw_text)
     try:
-        for i in range(arg-1, len(links)):
+        for entry_type, entry_data in all_entries[arg-1:]:
+            # ── NEW: handle skipped lines (no valid URL) ──
+            if entry_type == "skip":
+                await send_failed_notice(bot, channel_id, count, entry_data[:60] if entry_data else "(blank line)", "(no valid URL)", "Line does not contain a valid downloadable URL")
+                count += 1
+                failed_count += 1
+                continue
+            i = entry_data  # index into links list
+            # ── rest of existing download loop body ──
             if globals.cancel_requested:
                 await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
                 globals.processing_request = False
@@ -605,6 +634,26 @@ async def drm_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{namef}.mp4"'
 #.............................................................................................................................................................................................................
             try:
+                # ── Define Show/Show1 BEFORE if/else so both m.text & m.document paths can use them ──
+                remaining_links = len(all_entries) - count if all_entries else 0
+                progress = (count / len(all_entries)) * 100 if all_entries else 0
+                Show = f"<i><b>Video Downloading</b></i>\n<blockquote><b>{str(count).zfill(3)}) {name1}</b></blockquote>"
+                Show1 = f"<blockquote>🚀𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐬 » {progress:.2f}%</blockquote>\n┃\n" \
+                        f"┣🔗𝐈𝐧𝐝𝐞𝐱 » {count}/{len(all_entries)}\n┃\n" \
+                        f"╰━🖇️𝐑𝐞𝐦𝐚𝐢𝐧 » {remaining_links}\n" \
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━\n" \
+                        f"<blockquote><b>⚡Dᴏᴡɴʟᴏᴀᴅɪɴɢ Sᴛᴀʀᴛᴇᴅ...⏳</b></blockquote>\n┃\n" \
+                        f'┣💃𝐂𝐫𝐞𝐝𝐢𝐭 » {CR}\n┃\n' \
+                        f"╰━📚𝐁𝐚𝐭𝐜𝐡 » {b_name}\n" \
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━\n" \
+                        f"<blockquote>📚𝐓𝐢𝐭𝐥𝐞 » {namef}</blockquote>\n┃\n" \
+                        f"┣🍁𝐐𝐮𝐚𝐥𝐢𝐭𝐲 » {quality}\n┃\n" \
+                        f'┣━🔗𝐋𝐢𝐧𝐤 » <a href="{link0}">**Original Link**</a>\n┃\n' \
+                        f'╰━━🖇️𝐔𝐫𝐥 » <a href="{url}">**Api Link**</a>\n' \
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━\n" \
+                        f"🛑**Send** /stop **to stop process**\n┃\n" \
+                        f"╰━✦𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲 ✦ {CREDIT}💥."
+                # ─────────────────────────────────────────────────────────────────────────────────
                 if m.text:
                     cc = f'**🖲️𝐕𝐈𝐃_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} {res} @MR_Toxic_1.mkv\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
                     cc1 = f'**💾 𝐏𝐃𝐅_𝐈𝐃: {str(count).zfill(3)}.\n\n📝 𝐓𝐢𝐭𝐥𝐞: {name1} @MR_Toxic_1.pdf\n\n<pre><code>📚 𝐁𝐚𝐭𝐜𝐡 𝐍𝐚𝐦𝐞: {b_name}</code></pre>\n\n📥 𝐄𝐱𝐭𝐫𝐚𝐜𝐭𝐞𝐝 𝐁𝐲⬩➤ :\n★彡[{CR}]彡★\n\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**'
@@ -659,24 +708,7 @@ async def drm_handler(bot: Client, m: Message):
                             ccm = f'<b>{str(count).zfill(3)}.</b> {name1} .mp3'
                             cchtml = f'<b>{str(count).zfill(3)}.</b> {name1} .html'
 #........................................................................................................................................................................................
-                remaining_links = len(links) - count
-                progress = (count / len(links)) * 100
-                Show = f"<i><b>Video Downloading</b></i>\n<blockquote><b>{str(count).zfill(3)}) {name1}</b></blockquote>" 
-                Show1 = f"<blockquote>🚀𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐬 » {progress:.2f}%</blockquote>\n┃\n" \
-                        f"┣🔗𝐈𝐧𝐝𝐞𝐱 » {count}/{len(links)}\n┃\n" \
-                        f"╰━🖇️𝐑𝐞𝐦𝐚𝐢𝐧 » {remaining_links}\n" \
-                        f"━━━━━━━━━━━━━━━━━━━━━━━━\n" \
-                        f"<blockquote><b>⚡Dᴏᴡɴʟᴏᴀᴅɪɴɢ Sᴛᴀʀᴛᴇᴅ...⏳</b></blockquote>\n┃\n" \
-                        f'┣💃𝐂𝐫𝐞𝐝𝐢𝐭 » {CR}\n┃\n' \
-                        f"╰━📚𝐁𝐚𝐭𝐜𝐡 » {b_name}\n" \
-                        f"━━━━━━━━━━━━━━━━━━━━━━━━━\n" \
-                        f"<blockquote>📚𝐓𝐢𝐭𝐥𝐞 » {namef}</blockquote>\n┃\n" \
-                        f"┣🍁𝐐𝐮𝐚𝐥𝐢𝐭𝐲 » {quality}\n┃\n" \
-                        f'┣━🔗𝐋𝐢𝐧𝐤 » <a href="{link0}">**Original Link**</a>\n┃\n' \
-                        f'╰━━🖇️𝐔𝐫𝐥 » <a href="{url}">**Api Link**</a>\n' \
-                        f"━━━━━━━━━━━━━━━━━━━━━━━━━\n" \
-                        f"🛑**Send** /stop **to stop process**\n┃\n" \
-                        f"╰━✦𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲 ✦ {CREDIT}💥."
+                # Show/Show1 now defined above before if/else — available for both m.text & m.document paths
 #........................................................................................................................................................................................           
                 if "drive" in url:
                     try:
@@ -835,11 +867,13 @@ async def drm_handler(bot: Client, m: Message):
         globals.processing_request = False
         globals.cancel_requested = False
 
-    success_count = len(links) - int(raw_text) - failed_count + 1
+    total_lines = len(all_entries) if 'all_entries' in locals() else len(links)
+    skipped_count = total_lines - len(links)
+    success_count = total_lines - int(raw_text) - failed_count + 1
     video_count = len(links) - pdf_count - img_count
     if m.document:
-        await bot.send_message(channel_id, f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐔𝐑𝐋𝐬 URLs: {len(links)} \n┠🔴 𝐓𝐨𝐭𝐚𝐥 𝐅𝐚𝐢𝐥𝐞𝐝 𝐔𝐑𝐋𝐬: {failed_count}\n┠🟢 𝐓𝐨𝐭𝐚𝐥 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥 𝐔𝐑𝐋𝐬: {success_count}\n┃   ┠🎥 𝐓𝐨𝐭𝐚𝐥 𝐕𝐢𝐝𝐞𝐨 𝐔𝐑𝐋𝐬: {video_count}\n┃   ┠📄 𝐓𝐨𝐭𝐚𝐥 𝐏𝐃𝐅 𝐔𝐑𝐋𝐬: {pdf_count}\n┃   ┠📸 𝐓𝐨𝐭𝐚𝐥 𝐈𝐌𝐀𝐆𝐄 𝐔𝐑𝐋𝐬: {img_count}</blockquote>\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**\n")
-        await bot.send_message(channel_id, f"⋅ ─ 𝐥𝐢𝐬𝐭 𝐢𝐧𝐝𝐞𝐱 ({raw_text}-{len(links)}) 𝐨𝐮𝐭 𝐨𝐟 𝐫𝐚𝐧𝐠𝐞 ─ ⋅\n<blockquote><b>📚Batch : {b_name}</b></blockquote>\n⋅ ─ ✅DOWNLOADING ✩ COMPLETED ─ ⋅")
+        await bot.send_message(channel_id, f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐋𝐢𝐧𝐞𝐬: {total_lines} \n┠🔴 𝐓𝐨𝐭𝐚𝐥 𝐅𝐚𝐢𝐥𝐞𝐝 𝐔𝐑𝐋𝐬: {failed_count}\n┃   ┠📸 𝐒𝐤𝐢𝐩𝐩𝐞𝐝 (non-URL): {skipped_count}\n┠🟢 𝐓𝐨𝐭𝐚𝐥 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥 𝐔𝐑𝐋𝐬: {success_count}\n┃   ┠🎥 𝐓𝐨𝐭𝐚𝐥 𝐕𝐢𝐝𝐞𝐨 𝐔𝐑𝐋𝐬: {video_count}\n┃   ┠📄 𝐓𝐨𝐭𝐚𝐥 𝐏𝐃𝐅 𝐔𝐑𝐋𝐬: {pdf_count}\n┃   ┠📸 𝐓𝐨𝐭𝐚𝐥 𝐈𝐌𝐀𝐆𝐄 𝐔𝐑𝐋𝐬: {img_count}</blockquote>\n**➽━━━⊱∘₊𝙏𝙚𝙖𝙢★𝙏𝙤𝙭𝙞𝙘₊∘⊰━━━❥**\n")
+        await bot.send_message(channel_id, f"⋅ ─ 𝐥𝐢𝐬𝐭 𝐢𝐧𝐝𝐞𝐱 ({raw_text}-{total_lines}) 𝐨𝐮𝐭 𝐨𝐟 𝐫𝐚𝐧𝐠𝐞 ─ ⋅\n<blockquote><b>📚Batch : {b_name}</b></blockquote>\n⋅ ─ ✅DOWNLOADING ✩ COMPLETED ─ ⋅")
         if "/Baby" not in raw_text7:
             await bot.send_message(m.chat.id, f"<blockquote><b>💕𝐘𝐨𝐮𝐫 𝐓𝐚𝐬𝐤 𝐢𝐬 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞𝐝,𝐩𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐒𝐞𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥📱.</b></blockquote>")
 
@@ -1023,12 +1057,22 @@ def register_drm_handlers(bot):
                 content = f.read()
             content_lines = content.split("\n")
             links = []
-            for i in content_lines:
-                if "://" not in i:
+            all_entries = []  # ── NEW: preserves original line order; no line is ever silently skipped ──
+            for raw_line in content_lines:
+                raw_line = raw_line.strip()
+                if not raw_line:
+                    all_entries.append(("skip", "(blank/empty line)"))
                     continue
-                title_part, url_body = parse_title_url(i)
-                if title_part is not None and url_body is not None:
-                    links.append([title_part, url_body])
+                if "://" not in raw_line:
+                    all_entries.append(("skip", raw_line))
+                    continue
+                title_part, url_body = parse_title_url(raw_line)
+                if title_part is None or url_body is None:
+                    all_entries.append(("skip", raw_line))
+                    continue
+                entry = [title_part, url_body]
+                links.append(entry)
+                all_entries.append(("url", len(links) - 1))
             os.remove(x)
         except Exception:
             await editable.edit("**⚠️ 𝐅𝐚𝐢𝐥𝐞𝐝 𝐭𝐨 𝐫𝐞𝐚𝐝 𝐭𝐡𝐞 𝐓𝐗𝐓 𝐟𝐢𝐥𝐞. 𝐏𝐥𝐞𝐚𝐬𝐞 𝐬𝐞𝐧𝐝 𝐚 𝐯𝐚𝐥𝐢𝐝 .𝐭𝐱𝐭 𝐟𝐢𝐥𝐞.**")
@@ -1036,8 +1080,16 @@ def register_drm_handlers(bot):
                 os.remove(x)
             return
 
-        if not links:
+        total_lines = len(all_entries)
+        if total_lines == 0:
             await editable.edit("<b>🔹𝐈 𝐋𝐎𝐕𝐄 𝐘𝐎𝐔💕😘.</b>")
+            return
+        if not links:
+            count = 1
+            for entry_type, entry_data in all_entries:
+                await send_failed_notice(bot, channel_id, count, entry_data[:60] if entry_data else "(blank line)", "(no valid URL)", "Line does not contain a valid downloadable URL")
+                count += 1
+            await editable.edit(f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐋𝐢𝐧𝐞𝐬: {total_lines} \n┠🔴 𝐀𝐥𝐥 𝐥𝐢𝐧𝐞𝐬 𝐟𝐚𝐢𝐥𝐞𝐝 (𝐧𝐨 𝐯𝐚𝐥𝐢𝐝 𝐔𝐑𝐋𝐬 𝐟𝐨𝐮𝐧𝐝)</blockquote>")
             return
 
         # ── Step sticker tracking ─────────────────────────────────────────────
@@ -1058,7 +1110,8 @@ def register_drm_handlers(bot):
 
         # Step 1 sticker — total links found
         await _send_step_sticker("CAACAgQAAxkBAAFLw2xqJYZ7bpEUbaLHEV_yYaduL1twAwACVRUAAnOxYFCUkyy9GwdwoTsE")
-        await editable.edit(f"**🔹𝐓𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐤𝐬 𝐟𝐨𝐮𝐧𝐝 𝐚𝐫𝐞 {len(links)}\n\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🙄 𝐢𝐧𝐢𝐭𝐢𝐚𝐥 𝐢𝐬 𝟏**")
+        skipped_lines = total_lines - len(links)
+        await editable.edit(f"**🔹𝐓𝐨𝐭𝐚𝐥 𝐥𝐢𝐧𝐞𝐬: {total_lines}  (𝐯𝐚𝐥𝐢𝐝 𝐥𝐢𝐧𝐤𝐬: {len(links)}, 𝐬𝐤𝐢𝐩𝐩𝐞𝐝: {skipped_lines})\n\n𝐒𝐞𝐧𝐝 𝐅𝐫𝐨𝐦 𝐰𝐡𝐞𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝🙄 𝐢𝐧𝐢𝐭𝐢𝐚𝐥 𝐢𝐬 𝟏**")
         try:
             input0: Message = await bot.listen(editable.chat.id, timeout=200)
             raw_text = input0.text
@@ -1268,12 +1321,21 @@ def register_drm_handlers(bot):
                 _ul_sticker[0] = None
         # ─────────────────────────────────────────────────────────────────────
 
-        for i in range(arg - 1, len(links)):
+        for entry_type, entry_data in all_entries[arg - 1:]:
             if globals.cancel_requested:
                 await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
                 globals.processing_request = False
                 globals.cancel_requested = False
                 return
+
+            # ── NEW: handle skipped lines (no valid URL) ──
+            if entry_type == "skip":
+                await send_failed_notice(bot, channel_id, count, entry_data[:60] if entry_data else "(blank line)", "(no valid URL)", "Line does not contain a valid downloadable URL")
+                count += 1
+                failed_count += 1
+                continue
+            i = entry_data  # index into links list
+            # ── rest of existing download loop body ──
 
             Vxy = links[i][1].replace("file/d/", "uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing", "")
             url = "https://" + Vxy
@@ -1386,11 +1448,12 @@ def register_drm_handlers(bot):
             ccm = f'[{name1}.mp3]({link0})'
             cchtml = f'[{name1}.html]({link0})'
 
-            remaining_links = len(links) - count
-            progress = (count / len(links)) * 100 if links else 0
+            total_entries = len(all_entries)
+            remaining_links = total_entries - count
+            progress = (count / total_entries) * 100 if total_entries else 0
             Show = f"<i><b>Video Downloading</b></i>\n<blockquote><b>{str(count).zfill(3)}) {name1}</b></blockquote>"
             Show1 = f"<blockquote>🚀𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐬 » {progress:.2f}%</blockquote>\n┃\n" \
-                    f"┣🔗𝐈𝐧𝐝𝐞𝐱 » {count}/{len(links)}\n┃\n" \
+                    f"┣🔗𝐈𝐧𝐝𝐞𝐱 » {count}/{total_entries}\n┃\n" \
                     f"╰━🖇️𝐑𝐞𝐦𝐚𝐢𝐧 » {remaining_links}\n" \
                     f"━━━━━━━━━━━━━━━━━━━━━━━━\n" \
                     f"<blockquote><b>⚡Dᴏᴡɴʟᴏᴀᴅɪɴɢ Sᴛᴀʀᴛᴇᴅ...⏳</b></blockquote>\n┃\n" \
@@ -1571,13 +1634,16 @@ def register_drm_handlers(bot):
                 continue
 
         # ── Send completion summary ──────────────────────────────────────────
-        success_count = len(links) - arg - failed_count + 1
+        total_lines = len(all_entries)
+        skipped_count = total_lines - len(links)
+        success_count = total_lines - arg - failed_count + 1
         pdf_count_love = sum(1 for l in links if ".pdf" in l[1])
         video_count_love = len(links) - pdf_count_love
         await bot.send_message(
             channel_id,
-            f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐔𝐑𝐋𝐬 URLs: {len(links)} \n"
+            f"<blockquote>🔗 𝐓𝐨𝐭𝐚𝐥 𝐋𝐢𝐧𝐞𝐬: {total_lines} \n"
             f"┠🔴 𝐓𝐨𝐭𝐚𝐥 𝐅𝐚𝐢𝐥𝐞𝐝 𝐔𝐑𝐋𝐬: {failed_count}\n"
+            f"┃   ┠📸 𝐒𝐤𝐢𝐩𝐩𝐞𝐝 (non-URL): {skipped_count}\n"
             f"┠🟢 𝐓𝐨𝐭𝐚𝐥 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥 𝐔𝐑𝐋𝐬: {success_count}\n"
             f"┃   ┠🎥 𝐓𝐨𝐭𝐚𝐥 𝐕𝐢𝐝𝐞𝐨 𝐔𝐑𝐋𝐬: {video_count_love}\n"
             f"┃   ┠📄 𝐓𝐨𝐭𝐚𝐥 𝐏𝐃𝐅 𝐔𝐑𝐋𝐬: {pdf_count_love}</blockquote>\n"
@@ -1585,7 +1651,7 @@ def register_drm_handlers(bot):
         )
         await bot.send_message(
             channel_id,
-            f"⋅ ─ 𝐥𝐢𝐬𝐭 𝐢𝐧𝐝𝐞𝐱 ({raw_text}-{len(links)}) 𝐨𝐮𝐭 𝐨𝐟 𝐫𝐚𝐧𝐠𝐞 ─ ⋅\n"
+            f"⋅ ─ 𝐥𝐢𝐬𝐭 𝐢𝐧𝐝𝐞𝐱 ({raw_text}-{total_lines}) 𝐨𝐮𝐭 𝐨𝐟 𝐫𝐚𝐧𝐠𝐞 ─ ⋅\n"
             f"<blockquote><b>📚Batch : {b_name}</b></blockquote>\n"
             f"⋅ ─ ✅DOWNLOADING ✩ COMPLETED ─ ⋅"
         )
